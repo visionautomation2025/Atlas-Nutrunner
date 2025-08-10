@@ -516,58 +516,7 @@ body {
     gap: 20px;
 }
 
-.tightening-visual {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    position: relative;
-    min-height: 120px;
-}
 
-.scanner-component {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.scanner-icon {
-    font-size: 2rem;
-    color: #495057;
-}
-
-.scanner-beam {
-    width: 2px;
-    height: 40px;
-    background: linear-gradient(to bottom, #ff6b35, transparent);
-    animation: scan 2s infinite;
-}
-
-.component-visual {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.component-visual .component-icon {
-    font-size: 2rem;
-    color: #495057;
-}
-
-.component-visual span {
-    font-size: 0.9rem;
-    color: #495057;
-    font-weight: 500;
-}
 
 .current-metrics, .target-metrics {
     background: white;
