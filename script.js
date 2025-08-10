@@ -1,6 +1,6 @@
 // Global Variables
 let currentStep = 1;
-let totalSteps = 6;
+let totalSteps = 7;
 let cycleData = {
     barcode: '',
     finalTorque: 0,
@@ -239,6 +239,9 @@ function showStep(stepNumber) {
             if (!isPassSequence) {
                 showFailSequence();
             }
+            break;
+        case 7:
+            // Password screen is already shown in HTML
             break;
     }
 }
@@ -736,7 +739,6 @@ function startFailSequence() {
 
 function hideRejectionBinAndShowPassword() {
     const rejectionSection = document.getElementById('rejection-section');
-    const passwordSection = document.getElementById('password-section');
     const statusText = document.getElementById('fail-status-text');
     const statusMessage = document.getElementById('fail-status-message');
     const stepStatus = document.getElementById('step6-status');
@@ -744,16 +746,21 @@ function hideRejectionBinAndShowPassword() {
     // Hide rejection bin section
     rejectionSection.style.display = 'none';
     
-    // Show password section
-    passwordSection.classList.remove('hidden');
-    
     // Update status
-    statusText.textContent = '🔒 Enter Password to Activate Tool';
+    statusText.textContent = '🔒 Moving to Tool Reactivation Screen';
     statusMessage.className = 'status-message updating';
     
-    stepStatus.textContent = '🔒 Tool Locked - Password Required';
+    stepStatus.textContent = '✅ Rejection Complete - Tool Locked';
     stepStatus.style.background = '#f8d7da';
     stepStatus.style.color = '#721c24';
+    
+    // Advance to Step 7 (Password Screen) after delay
+    setTimeout(() => {
+        currentStep = 7;
+        showStep(7);
+        updateProgress();
+        updateNavigationButtons();
+    }, 2000);
 }
 
 function moveToRejection() {
@@ -777,23 +784,23 @@ function moveToRejection() {
 function submitPassword() {
     const passwordInput = document.getElementById('password-input');
     const password = passwordInput.value;
-    const stepStatus = document.getElementById('step6-status');
-    const statusText = document.getElementById('fail-status-text');
-    const statusMessage = document.getElementById('fail-status-message');
+    const stepStatus = document.getElementById('step7-status');
+    const statusText = document.getElementById('reactivation-status-text');
+    const statusMessage = document.getElementById('reactivation-status-message');
     
     if (password === '1234') { // Demo password
-        // Password correct - show "Remove Component"
-        stepStatus.textContent = '✅ Password accepted - Tool activated';
+        // Password correct - show success
+        stepStatus.textContent = '✅ Password Accepted - Tool Activated';
         stepStatus.style.background = '#d4edda';
         stepStatus.style.color = '#155724';
         
-        statusText.textContent = '📦 Remove Component';
+        statusText.textContent = '🔓 Tool Successfully Reactivated';
         statusMessage.className = 'status-message success';
         
         // Clear password input
         passwordInput.value = '';
         
-        // Show "Remove Component" message and then reset to barcode scan
+        // Show success message and then reset to barcode scan
         setTimeout(() => {
             showRemoveComponentMessage();
         }, 3000);
@@ -802,11 +809,16 @@ function submitPassword() {
         passwordInput.style.borderColor = '#dc3545';
         passwordInput.style.boxShadow = '0 0 0 3px rgba(220, 53, 69, 0.1)';
         
+        statusText.textContent = '❌ Incorrect Password - Try Again';
+        statusMessage.className = 'status-message error';
+        
         // Reset after 2 seconds
         setTimeout(() => {
             passwordInput.style.borderColor = '#dee2e6';
             passwordInput.style.boxShadow = 'none';
             passwordInput.value = '';
+            statusText.textContent = '⏳ Waiting for password...';
+            statusMessage.className = 'status-message';
         }, 2000);
     }
 }

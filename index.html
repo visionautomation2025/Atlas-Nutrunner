@@ -270,24 +270,38 @@
                                 
                                 <button id="move-to-rejection" class="action-button">📦 Move to Rejection Bin</button>
                             </div>
-                            
-                            <!-- Password Section -->
-                            <div id="password-section" class="password-section hidden">
-                                <div class="password-prompt">
-                                    <p>🔒 Enter Password to Reactivate Tool</p>
-                                    <p class="password-hint">Password: <strong>1234</strong></p>
-                                    <input type="password" id="password-input" placeholder="Enter password" maxlength="4">
-                                    <button id="submit-password" class="action-button">🔓 Submit</button>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Password Screen -->
+            <div id="step-7" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 7: Tool Reactivation</h2>
+                    <div class="step-status" id="step7-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="password-screen">
+                        <div class="password-header">
+                            <div class="lock-icon">🔒</div>
+                            <h3>Tool Reactivation Required</h3>
+                            <p>The tightening tool has been deactivated due to a failed operation.</p>
                         </div>
                         
-                        <div id="password-section" class="password-section hidden">
+                        <div class="password-section">
                             <div class="password-prompt">
                                 <p>🔒 Enter Password to Reactivate Tool</p>
                                 <p class="password-hint">Password: <strong>1234</strong></p>
                                 <input type="password" id="password-input" placeholder="Enter password" maxlength="4">
                                 <button id="submit-password" class="action-button">🔓 Submit</button>
+                            </div>
+                        </div>
+                        
+                        <div class="reactivation-status">
+                            <div class="status-message" id="reactivation-status-message">
+                                <span id="reactivation-status-text">⏳ Waiting for password...</span>
                             </div>
                         </div>
                     </div>
