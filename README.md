@@ -1,248 +1,168 @@
-# PF6000 Open Protocol Animation Demo
+# Automated Barcode & Tightening System Demo
 
-A comprehensive HTML/CSS/JavaScript demonstration system showcasing PF6000 Open Protocol communication, integration capabilities, and productivity gains through interactive animations and real-time simulations.
+An interactive HTML, CSS, and JavaScript demo simulating an automated barcode & tightening system powered by Atlas Copco Power Focus Controller. This demo provides a visual walkthrough of the complete workflow with engaging animations, sound effects, and real-time feedback.
 
-## 🚀 Features
+## Features
 
-### 1. Open Protocol Communication Overview
-- **Network Communication Flowchart**: Animated visualization of PF6000 communicating with PC, PLC, and barcode scanner
-- **TCP/IP Packet Animation**: Real-time packet movement simulation between devices
-- **Barcode Job Selection**: Interactive job selection and acknowledgment system
+### 🎯 Interactive Workflow
+- **6-Step Process**: Complete simulation of the automated tightening workflow
+- **Real-time Feedback**: Live status updates and visual indicators
+- **Progress Tracking**: Step-by-step progress bar and navigation
 
-### 2. Integration with Barcode, PLC, and PC
-- **Barcode Trigger Simulation**: Complete workflow from barcode scan to job loading
-- **PLC Signal Communication**: Real-time signal exchange between PLC and PF6000
-- **Live Tool Status Dashboard**: Dynamic status updates for multiple tools
+### 📊 Visual Elements
+- **Barcode Scanner Animation**: Simulated scanning with visual feedback
+- **Component Placement**: Interactive component placement with sensor status
+- **Cylinder Animation**: Animated pneumatic cylinder movement
+- **Torque vs. Angle Chart**: Real-time Chart.js visualization
+- **Pass/Fail Banners**: Clear visual feedback for results
 
-### 3. Customizable Features Using APIs
-- **Job Program Deployment**: Bulk deployment to multiple tools with progress tracking
-- **User-Defined Rules**: Configurable access control and quality checks
-- **Configuration Interface**: Real-time parameter setting and validation
+### 🔊 Audio Feedback
+- **Scan Sounds**: Audio feedback for barcode scanning
+- **Pass/Fail Sounds**: Distinct sounds for successful/failed operations
+- **Error Alerts**: Audio cues for invalid operations
 
-### 4. Third-Party System Integration
-- **MES/ERP Data Flow**: End-to-end data pipeline visualization
-- **Database Storage Animation**: Real-time data entry and storage simulation
-- **Report Upload & Sync**: Automated reporting and server synchronization
+### 🎨 Modern UI/UX
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Color-coded Status**: Green (success), Red (error), Yellow (waiting)
+- **Smooth Animations**: CSS transitions and keyframe animations
+- **Professional Styling**: Clean, modern interface with gradients and shadows
 
-### 5. Data Processing & Analytics
-- **Real-Time Data Processing**: Live data collection, filtering, and analysis
-- **Analytics Dashboard**: Torque trends, failure rates, and cycle time heat maps
-- **Anomaly Detection Alerts**: Intelligent alerting system with history tracking
+## Workflow Steps
 
-### 6. ROI and Productivity Gains
-- **Cycle Time Comparison**: Before/after productivity analysis
-- **Rework & Downtime Reduction**: Visual impact demonstration
-- **ROI Summary**: Comprehensive financial impact analysis
+### Step 1: Scan Barcode
+- Simulated barcode scanner with animated scanning beam
+- Random barcode generation for demo purposes
+- Success/error feedback with audio cues
+- Invalid scan simulation available
 
-### 7. End-to-End Workflow
-- **Interactive Timeline**: Complete process visualization from scan to ROI
-- **Step-by-Step Progression**: Automated workflow demonstration
-- **Real-time Status Updates**: Live progress tracking
+### Step 2: Place Component
+- Interactive component placement area
+- Part sensor status monitoring
+- Visual feedback when component is detected
 
-## 🎯 Key Demonstrations
+### Step 3: Press Cycle Start
+- Large, prominent cycle start button
+- Animated cylinder movement (forward)
+- Reed switch simulation
+- Auto-advance to tightening process
 
-### Communication Protocols
-- **Open Protocol**: TCP/IP communication between PF6000 and software
-- **Real-time Data Exchange**: Live packet animation and acknowledgment
-- **Multi-device Integration**: PC, PLC, and barcode scanner coordination
+### Step 4: Tightening Process
+- **Real-time Torque vs. Angle Chart**: Live-updating Chart.js visualization
+- **Live Metrics**: Current torque and angle display
+- **Target Values**: Display of target specifications
+- **Random Pass/Fail**: 70% pass rate for demo variety
+- **Audio Feedback**: Success/failure sounds
 
-### Industrial Automation
-- **Tool Management**: Multi-tool status monitoring and control
-- **Quality Control**: Automated quality checks and validation
-- **Process Optimization**: Cycle time reduction and efficiency gains
+### Step 5: Pass Sequence
+- **Green PASS Banner**: Large success indicator
+- **Cylinder Retraction**: Animated reverse movement
+- **Component Removal**: Prompt for next action
+- **Summary Report**: Complete cycle data
 
-### Data Analytics
-- **Real-time Monitoring**: Live data collection and processing
-- **Predictive Analytics**: Trend analysis and anomaly detection
-- **Performance Metrics**: Comprehensive KPI tracking and visualization
+### Step 6: Fail Sequence
+- **Red FAIL Banner**: Large failure indicator
+- **Rejection Bin**: Component disposal simulation
+- **Password Protection**: Tool reactivation (demo password: 1234)
+- **Summary Report**: Complete cycle data
 
-### System Integration
-- **MES/ERP Connectivity**: Seamless integration with enterprise systems
-- **Database Management**: Automated data storage and retrieval
-- **Reporting Automation**: Scheduled report generation and distribution
+## Technical Features
 
-## 🛠️ Technical Features
+### 📱 Responsive Design
+- Mobile-first approach
+- Touch/swipe navigation support
+- Adaptive layouts for different screen sizes
+- Optimized for tablets and mobile devices
 
-### Modern Web Technologies
-- **HTML5**: Semantic markup and modern structure
-- **CSS3**: Advanced animations, gradients, and responsive design
-- **JavaScript ES6+**: Modern JavaScript with async/await and modules
-- **Canvas API**: Dynamic chart generation and visualization
+### ⌨️ Keyboard Navigation
+- **Arrow Keys**: Navigate between steps
+- **Enter Key**: Trigger current step action
+- **Tab Navigation**: Full keyboard accessibility
 
-### Interactive Elements
-- **Real-time Animations**: Smooth CSS transitions and keyframe animations
-- **Responsive Design**: Mobile-friendly layout and touch interactions
-- **Keyboard Shortcuts**: Quick navigation (Ctrl/Cmd + 1-7)
-- **Auto-updating**: Live data simulation and status updates
+### 📊 Chart.js Integration
+- Real-time torque vs. angle plotting
+- Dual Y-axis for different units
+- Smooth animations and interactions
+- Performance optimized (50-point rolling window)
 
-### Performance Optimizations
-- **Efficient Animations**: Hardware-accelerated CSS transforms
-- **Memory Management**: Proper cleanup and resource management
-- **Responsive Images**: Optimized for various screen sizes
-- **Progressive Enhancement**: Graceful degradation for older browsers
+### 🎵 Audio System
+- Base64 encoded audio files (no external dependencies)
+- Fallback handling for browsers with audio restrictions
+- Volume control and error handling
 
-## 📱 Responsive Design
+## Getting Started
 
-The demo is fully responsive and works on:
-- **Desktop**: Full-featured experience with all animations
-- **Tablet**: Optimized layout with touch-friendly controls
-- **Mobile**: Streamlined interface with essential features
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- No additional software installation required
 
-## 🎮 How to Use
+### Installation
+1. Download all files to a local directory:
+   - `index.html`
+   - `styles.css`
+   - `script.js`
+   - `README.md`
 
-### Navigation
-1. **Top Navigation**: Click on section names to switch between demos
-2. **Keyboard Shortcuts**: Use Ctrl/Cmd + 1-7 for quick navigation
-3. **Interactive Buttons**: Click "Start Animation" buttons to trigger demos
+2. Open `index.html` in your web browser
 
-### Demo Sections
+### Usage
+1. **Start Demo**: Click the "Start Demo" button on the intro screen
+2. **Navigate**: Use arrow buttons or keyboard arrows to move between steps
+3. **Interact**: Click action buttons to simulate real operations
+4. **Observe**: Watch real-time animations and status updates
+5. **Complete**: Follow the workflow to see the complete cycle
 
-#### 1. Overview
-- Click "Start Animation" to see network communication
-- Click "Animate Packets" for TCP/IP simulation
-- Click "Simulate Scan" for barcode interaction
+### Demo Controls
+- **Scan Barcode**: Click "Scan Barcode" or "Simulate Invalid Scan"
+- **Place Component**: Click "Place Component" button
+- **Cycle Start**: Click the large "CYCLE START" button
+- **Remove Component**: Click "Remove Component" (pass sequence)
+- **Move to Rejection**: Click "Move to Rejection Bin" (fail sequence)
+- **Password**: Enter "1234" to reactivate tool (fail sequence)
 
-#### 2. Integration
-- Click "Scan Barcode" to trigger job loading
-- Click "START/STOP" buttons for PLC communication
-- Click "Update Status" for tool status changes
+## Customization
 
-#### 3. Customization
-- Click "Deploy to All Tools" for bulk deployment
-- Configure rules and click "Test Tool Access"
-- Adjust parameters and click "Save Configuration"
+### Colors and Styling
+- Modify CSS variables in `styles.css` for brand colors
+- Adjust gradients and shadows for different visual themes
+- Customize animations and transitions
 
-#### 4. System Integration
-- Click "Start Data Flow" for MES/ERP integration
-- Click "Add Entry" for database simulation
-- Click "Upload Reports" for file synchronization
+### Workflow Logic
+- Edit `script.js` to modify step behavior
+- Adjust timing and animations
+- Change pass/fail probability rates
 
-#### 5. Analytics
-- Click "Start Processing" for data pipeline
-- Click "Update Analytics" for live metrics
-- Click "Trigger Alert" for anomaly detection
+### Audio
+- Replace base64 audio with external sound files
+- Add additional sound effects
+- Implement volume controls
 
-#### 6. ROI
-- View cycle time comparisons
-- See rework and downtime reductions
-- Analyze ROI metrics and charts
+## Browser Compatibility
 
-#### 7. Workflow
-- Click "Start Workflow" for end-to-end process
-- Watch automated step progression
-- Click "Reset" to restart the workflow
+- ✅ Chrome 60+
+- ✅ Firefox 55+
+- ✅ Safari 12+
+- ✅ Edge 79+
+- ⚠️ Internet Explorer (not supported)
 
-## 🔧 Customization
+## Performance Notes
 
-### Adding New Demos
-1. Add new section to HTML with appropriate ID
-2. Create corresponding CSS styles
-3. Add JavaScript functions for interactivity
-4. Update navigation menu
+- Chart.js updates are optimized for smooth performance
+- Audio files are base64 encoded to avoid external dependencies
+- CSS animations use hardware acceleration where possible
+- Touch events are debounced for mobile performance
 
-### Modifying Animations
-- Edit CSS keyframes for custom animations
-- Adjust timing in JavaScript setTimeout functions
-- Modify color schemes in CSS variables
+## Demo Password
 
-### Data Integration
-- Replace mock data with real API calls
-- Connect to actual PF6000 systems
-- Integrate with existing MES/ERP systems
+For the fail sequence password prompt, use: **1234**
 
-## 📊 Performance Metrics
+## License
 
-The demo showcases various performance improvements:
-- **Cycle Time Reduction**: 33% improvement (45s → 30s)
-- **Rework Rate**: 80% reduction (15% → 3%)
-- **Downtime**: 83% reduction (120min → 20min daily)
-- **ROI**: 280% return on investment
-- **Payback Period**: 8 months
+This demo is provided as-is for educational and demonstration purposes. Feel free to modify and adapt for your specific needs.
 
-## 🎨 Design System
+## Support
 
-### Color Palette
-- **Primary**: #667eea (Blue)
-- **Secondary**: #764ba2 (Purple)
-- **Success**: #38a169 (Green)
-- **Warning**: #d69e2e (Yellow)
-- **Error**: #e53e3e (Red)
-- **Neutral**: #4a5568 (Gray)
-
-### Typography
-- **Font Family**: Roboto (Google Fonts)
-- **Weights**: 300, 400, 500, 700
-- **Responsive**: Scales appropriately for all devices
-
-### Animations
-- **Duration**: 0.3s for interactions, 2-5s for demos
-- **Easing**: Cubic-bezier for smooth transitions
-- **Performance**: Hardware-accelerated transforms
-
-## 🔒 Browser Compatibility
-
-- **Chrome**: 80+ (Full support)
-- **Firefox**: 75+ (Full support)
-- **Safari**: 13+ (Full support)
-- **Edge**: 80+ (Full support)
-- **Mobile**: iOS Safari 13+, Chrome Mobile 80+
-
-## 📈 Future Enhancements
-
-### Planned Features
-- **3D Visualizations**: Three.js integration for immersive demos
-- **Real-time Data**: WebSocket connections for live data
-- **VR/AR Support**: Virtual reality demonstrations
-- **AI Integration**: Machine learning for predictive analytics
-- **Multi-language**: Internationalization support
-
-### API Integration
-- **REST APIs**: Connect to actual PF6000 systems
-- **WebSocket**: Real-time data streaming
-- **GraphQL**: Efficient data querying
-- **OAuth**: Secure authentication
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For technical support or questions:
-- **Email**: support@pf6000-demo.com
-- **Documentation**: [Full Documentation](https://docs.pf6000-demo.com)
-- **Issues**: [GitHub Issues](https://github.com/pf6000-demo/issues)
-
-## 🎯 Use Cases
-
-### Manufacturing
-- **Assembly Lines**: Real-time tool monitoring and control
-- **Quality Assurance**: Automated quality checks and validation
-- **Production Planning**: Optimized cycle times and resource allocation
-
-### Automotive
-- **Engine Assembly**: Precise torque control and monitoring
-- **Chassis Assembly**: Multi-point tightening coordination
-- **Quality Control**: Comprehensive traceability and reporting
-
-### Aerospace
-- **Critical Fastening**: High-precision torque applications
-- **Compliance**: Regulatory reporting and documentation
-- **Safety**: Real-time monitoring and alerting
-
-### Electronics
-- **PCB Assembly**: Delicate component fastening
-- **Testing**: Automated quality validation
-- **Traceability**: Complete component tracking
+For questions or issues with the demo, please refer to the code comments or create an issue in the repository.
 
 ---
 
-**Note**: This is a demonstration system. For production use, ensure proper integration with actual PF6000 systems and follow all safety and operational guidelines.
+**Note**: This is a simulation demo and does not connect to actual Atlas Copco Power Focus Controller hardware. It is designed for training, demonstration, and educational purposes only. 

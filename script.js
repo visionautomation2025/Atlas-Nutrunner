@@ -1,757 +1,971 @@
-// Global variables
-let currentWorkflowStep = 1;
-let isWorkflowRunning = false;
-let toolStatuses = ['ready', 'running', 'complete', 'error'];
-let currentToolIndex = 0;
+// Global Variables
+let currentStep = 1;
+let totalSteps = 6;
+let cycleData = {
+    barcode: '',
+    finalTorque: 0,
+    finalAngle: 0,
+    result: '',
+    cycleTime: 0,
+    startTime: 0
+};
+let torqueChart;
+let tighteningInterval;
+let currentTorque = 0;
+let currentAngle = 0;
+let isPassSequence = true; // Toggle between pass/fail for demo
 
-// Navigation functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Navigation
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.demo-section');
+// Barcode text management
+function setBarcodeText(text) {
+    const barcodeText = document.querySelector('.barcode-text');
+    const barcodeLines = document.querySelector('.barcode-lines');
+    
+    if (barcodeText) {
+        barcodeText.textContent = text;
+        
+        // Add blinking class for "Ready to scan..."
+        if (text === 'Ready to scan...') {
+            barcodeText.classList.add('blinking');
+        } else {
+            barcodeText.classList.remove('blinking');
+        }
+    }
+    
+    if (barcodeLines && text !== 'Ready to scan...') {
+        // Generate visual 1D barcode
+        generateBarcode(text, barcodeLines);
+    } else if (barcodeLines) {
+        // Clear barcode lines for "Ready to scan..."
+        barcodeLines.innerHTML = '';
+    }
+}
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            
-            // Update active nav link
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Show target section
-            sections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                }
-            });
-        });
+// Generate visual 1D barcode
+function generateBarcode(text, container) {
+    container.innerHTML = '';
+    
+    // Simple 1D barcode generation
+    // Each character gets converted to a pattern of bars
+    const patterns = {
+        'A': [1,0,1,1,0,0,0,0,1,0],
+        'B': [1,0,1,1,0,0,0,1,0,0],
+        'C': [1,0,1,1,0,0,1,0,0,0],
+        'D': [1,0,1,1,0,0,1,1,0,0],
+        'E': [1,0,1,1,0,1,0,0,0,0],
+        'F': [1,0,1,1,0,1,0,1,0,0],
+        'G': [1,0,1,1,0,1,1,0,0,0],
+        'H': [1,0,1,1,0,1,1,1,0,0],
+        'I': [1,0,1,1,1,0,0,0,0,0],
+        'J': [1,0,1,1,1,0,0,1,0,0],
+        'K': [1,0,1,1,1,0,1,0,0,0],
+        'L': [1,0,1,1,1,0,1,1,0,0],
+        'M': [1,0,1,1,1,1,0,0,0,0],
+        'N': [1,0,1,1,1,1,0,1,0,0],
+        'O': [1,0,1,1,1,1,1,0,0,0],
+        'P': [1,0,1,1,1,1,1,1,0,0],
+        'Q': [1,1,0,0,0,0,0,0,1,0],
+        'R': [1,1,0,0,0,0,0,1,0,0],
+        'S': [1,1,0,0,0,0,1,0,0,0],
+        'T': [1,1,0,0,0,0,1,1,0,0],
+        'U': [1,1,0,0,0,1,0,0,0,0],
+        'V': [1,1,0,0,0,1,0,1,0,0],
+        'W': [1,1,0,0,0,1,1,0,0,0],
+        'X': [1,1,0,0,0,1,1,1,0,0],
+        'Y': [1,1,0,0,1,0,0,0,0,0],
+        'Z': [1,1,0,0,1,0,0,1,0,0],
+        '0': [1,1,0,0,1,0,1,0,0,0],
+        '1': [1,1,0,0,1,0,1,1,0,0],
+        '2': [1,1,0,0,1,1,0,0,0,0],
+        '3': [1,1,0,0,1,1,0,1,0,0],
+        '4': [1,1,0,0,1,1,1,0,0,0],
+        '5': [1,1,0,0,1,1,1,1,0,0],
+        '6': [1,1,0,1,0,0,0,0,0,0],
+        '7': [1,1,0,1,0,0,0,1,0,0],
+        '8': [1,1,0,1,0,0,1,0,0,0],
+        '9': [1,1,0,1,0,0,1,1,0,0]
+    };
+    
+    // Add start pattern
+    const startPattern = [1,0,1,0,1,0,1,0,1,0];
+    let fullPattern = [...startPattern];
+    
+    // Convert each character to its pattern
+    for (let char of text) {
+        if (patterns[char]) {
+            fullPattern = fullPattern.concat(patterns[char]);
+        }
+    }
+    
+    // Add stop pattern
+    const stopPattern = [1,0,1,0,1,0,1,0,1,0];
+    fullPattern = fullPattern.concat(stopPattern);
+    
+    // Create visual bars
+    fullPattern.forEach((bar, index) => {
+        const barElement = document.createElement('div');
+        barElement.style.width = '2px';
+        barElement.style.height = '40px';
+        barElement.style.backgroundColor = bar === 1 ? '#000' : '#fff';
+        barElement.style.marginRight = '1px';
+        barElement.style.display = 'inline-block';
+        container.appendChild(barElement);
     });
+}
 
-    // Initialize charts
-    initializeCharts();
+// DOM Elements
+const introScreen = document.getElementById('intro-screen');
+const demoScreen = document.getElementById('demo-screen');
+const startDemoBtn = document.getElementById('start-demo');
+const stepCounter = document.getElementById('step-counter');
+const progressFill = document.getElementById('progress-fill');
+const prevStepBtn = document.getElementById('prev-step');
+const nextStepBtn = document.getElementById('next-step');
+
+// Audio Elements
+const scanSound = document.getElementById('scan-sound');
+const passSound = document.getElementById('pass-sound');
+const failSound = document.getElementById('fail-sound');
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEventListeners();
+    initializeChart();
 });
 
-// 1. Open Protocol Communication Overview Functions
-
-function startFlowchartAnimation() {
-    const devices = document.querySelectorAll('.device');
-    const connectionLines = document.querySelector('.connection-lines');
+// Event Listeners
+function initializeEventListeners() {
+    // Start Demo Button
+    startDemoBtn.addEventListener('click', startDemo);
     
-    // Animate devices
-    devices.forEach((device, index) => {
-        setTimeout(() => {
-            device.classList.add('animate');
-        }, index * 500);
+    // Navigation Buttons
+    prevStepBtn.addEventListener('click', previousStep);
+    nextStepBtn.addEventListener('click', nextStep);
+    
+    // Step 1: Scan Barcode
+    document.getElementById('scan-button').addEventListener('click', scanBarcode);
+    document.getElementById('invalid-scan').addEventListener('click', invalidScan);
+    
+    // Step 2: Place Component
+    document.getElementById('place-component').addEventListener('click', placeComponent);
+    
+    // Step 3: Cycle Start
+    document.getElementById('cycle-start').addEventListener('click', startCycle);
+    
+    // Step 5: Remove Component
+    document.getElementById('remove-component').addEventListener('click', removeComponent);
+    
+    // Step 6: Fail Sequence
+    document.getElementById('move-to-rejection').addEventListener('click', moveToRejection);
+    document.getElementById('submit-password').addEventListener('click', submitPassword);
+    
+    // Summary Report
+    document.getElementById('close-summary').addEventListener('click', closeSummary);
+    document.getElementById('restart-cycle').addEventListener('click', restartCycle);
+    
+    // Pass/Fail Modal
+    document.getElementById('simulate-pass').addEventListener('click', simulatePass);
+    document.getElementById('simulate-fail').addEventListener('click', simulateFail);
+    
+    // Password Input
+    document.getElementById('password-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            submitPassword();
+        }
+    });
+}
+
+// Start Demo
+function startDemo() {
+    introScreen.classList.remove('active');
+    demoScreen.classList.add('active');
+    cycleData.startTime = Date.now();
+    updateProgress();
+    
+    // Initialize barcode text
+    setBarcodeText('Ready to scan...');
+}
+
+// Navigation Functions
+function previousStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+        updateProgress();
+        updateNavigationButtons();
+    }
+}
+
+function nextStep() {
+    if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+        updateProgress();
+        updateNavigationButtons();
+    }
+}
+
+function showStep(stepNumber) {
+    // Hide all steps
+    document.querySelectorAll('.demo-step').forEach(step => {
+        step.classList.remove('active');
     });
     
-    // Animate connection lines
-    setTimeout(() => {
-        connectionLines.style.display = 'block';
-    }, 2000);
+    // Show current step
+    document.getElementById(`step-${stepNumber}`).classList.add('active');
     
-    // Stop animation after 5 seconds
-    setTimeout(() => {
-        devices.forEach(device => device.classList.remove('animate'));
-        connectionLines.style.display = 'none';
-    }, 5000);
+    // Update step counter
+    stepCounter.textContent = `Step ${stepNumber} of ${totalSteps}`;
+    
+    // Handle step-specific logic
+    switch(stepNumber) {
+        case 1:
+            resetStep1();
+            break;
+        case 2:
+            resetStep2();
+            break;
+        case 3:
+            resetStep3();
+            break;
+        case 4:
+            resetStep4();
+            break;
+        case 5:
+            if (isPassSequence) {
+                showPassSequence();
+            }
+            break;
+        case 6:
+            if (!isPassSequence) {
+                showFailSequence();
+            }
+            break;
+    }
 }
 
-function startPacketAnimation() {
-    const packets = document.querySelectorAll('.packet');
-    
-    packets.forEach((packet, index) => {
-        setTimeout(() => {
-            packet.classList.add('animate');
-        }, index * 1000);
-    });
-    
-    setTimeout(() => {
-        packets.forEach(packet => packet.classList.remove('animate'));
-    }, 6000);
+function updateProgress() {
+    const progress = (currentStep / totalSteps) * 100;
+    progressFill.style.width = `${progress}%`;
 }
 
-function simulateBarcodeScan() {
-    const jobItems = document.querySelectorAll('.job-item');
-    const ackText = document.querySelector('.ack-text');
-    
-    // Randomly select a job
-    const randomJob = jobItems[Math.floor(Math.random() * jobItems.length)];
-    const jobId = randomJob.getAttribute('data-job');
-    
-    // Highlight selected job
-    jobItems.forEach(item => item.classList.remove('selected'));
-    randomJob.classList.add('selected');
-    
-    // Update acknowledgment
-    ackText.textContent = `Job ${jobId} selected and acknowledged!`;
-    ackText.style.color = '#38a169';
-    
-    // Reset after 3 seconds
-    setTimeout(() => {
-        randomJob.classList.remove('selected');
-        ackText.textContent = 'Waiting for scan...';
-        ackText.style.color = '#4a5568';
-    }, 3000);
+function updateNavigationButtons() {
+    prevStepBtn.disabled = currentStep === 1;
+    nextStepBtn.disabled = currentStep === totalSteps;
 }
 
-// 2. Integration Functions
-
-function triggerBarcodeScan() {
-    const barcode = document.getElementById('demoBarcode');
-    const loadingProgress = document.querySelector('.loading-progress');
-    const loadingText = document.querySelector('.loading-text');
-    const jobLoaded = document.querySelector('.job-loaded');
+// Step 1: Scan Barcode
+function scanBarcode() {
+    const scanResult = document.getElementById('scan-result');
+    const stepStatus = document.getElementById('step1-status');
     
     // Generate random barcode
-    const newBarcode = Math.floor(Math.random() * 900000000) + 100000000;
-    barcode.textContent = newBarcode;
+    const barcode = 'ABC' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    cycleData.barcode = barcode;
     
-    // Show loading animation
-    loadingProgress.classList.add('animate');
-    loadingText.textContent = 'Loading job...';
+    // Play scan sound
+    playSound(scanSound);
     
-    // Simulate job loading
+    // Update display using the dedicated function
+    setBarcodeText(barcode);
+    stepStatus.textContent = '✅ Complete';
+    stepStatus.style.background = '#d4edda';
+    stepStatus.style.color = '#155724';
+    
+    // Show success result
+    scanResult.innerHTML = '✅ Scan OK — Part Selected in Nutrunner';
+    scanResult.className = 'result-display success';
+    
+    // Enable next step
     setTimeout(() => {
-        loadingProgress.classList.remove('animate');
-        loadingText.textContent = 'Job loaded successfully!';
-        jobLoaded.classList.add('show');
-        
-        setTimeout(() => {
-            jobLoaded.classList.remove('show');
-            loadingText.textContent = 'Ready for next scan';
-        }, 2000);
-    }, 2000);
-}
-
-function sendPLCSignal(signal) {
-    const signalArrow = document.querySelector('.signal-arrow');
-    const responseIndicator = document.querySelector('.response-indicator');
-    const responseText = document.querySelector('.response-text');
-    
-    // Animate signal flow
-    signalArrow.classList.add('animate');
-    
-    setTimeout(() => {
-        signalArrow.classList.remove('animate');
-        
-        // Update response based on signal
-        if (signal === 'START') {
-            responseIndicator.classList.add('success');
-            responseText.textContent = 'PF6000 started successfully';
-        } else {
-            responseIndicator.classList.add('error');
-            responseText.textContent = 'PF6000 stopped';
-        }
-        
-        // Reset after 3 seconds
-        setTimeout(() => {
-            responseIndicator.classList.remove('success', 'error');
-            responseText.textContent = 'Waiting for signal...';
-        }, 3000);
-    }, 1000);
-}
-
-function updateToolStatus() {
-    const toolStatuses = document.querySelectorAll('.tool-status');
-    
-    toolStatuses.forEach((tool, index) => {
-        setTimeout(() => {
-            // Remove all status classes
-            tool.classList.remove('ready', 'running', 'complete', 'error');
-            
-            // Add new random status
-            const statuses = ['ready', 'running', 'complete', 'error'];
-            const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
-            tool.classList.add(newStatus);
-            
-            // Update text
-            const statusText = tool.querySelector('span');
-            statusText.textContent = `Tool ${index + 1}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`;
-        }, index * 500);
-    });
-}
-
-// 3. Customization Functions
-
-function deployToAllTools() {
-    const progressFill = document.querySelector('.progress-fill');
-    const progressText = document.querySelector('.progress-text');
-    const toolItems = document.querySelectorAll('.tool-item');
-    const deployBtn = document.querySelector('.deploy-btn');
-    
-    // Disable button during deployment
-    deployBtn.disabled = true;
-    deployBtn.textContent = 'Deploying...';
-    
-    // Animate progress bar
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += 2;
-        progressFill.style.width = progress + '%';
-        progressText.textContent = progress + '%';
-        
-        if (progress >= 100) {
-            clearInterval(interval);
-            
-            // Deploy to each tool
-            toolItems.forEach((tool, index) => {
-                setTimeout(() => {
-                    tool.classList.add('deployed');
-                    tool.textContent = 'Deployed ✓';
-                }, index * 200);
-            });
-            
-            // Reset after 3 seconds
-            setTimeout(() => {
-                toolItems.forEach(tool => {
-                    tool.classList.remove('deployed');
-                    tool.textContent = tool.getAttribute('data-tool') === '1' ? 'Tool 1' : 
-                                     tool.getAttribute('data-tool') === '2' ? 'Tool 2' : 
-                                     tool.getAttribute('data-tool') === '3' ? 'Tool 3' : 'Tool 4';
-                });
-                progressFill.style.width = '0%';
-                progressText.textContent = '0%';
-                deployBtn.disabled = false;
-                deployBtn.innerHTML = '<i class="fas fa-rocket"></i> Deploy to All Tools';
-            }, 3000);
-        }
-    }, 50);
-}
-
-function testToolAccess() {
-    const barcodeRequired = document.getElementById('barcodeRequired').checked;
-    const operatorAuth = document.getElementById('operatorAuth').checked;
-    const qualityCheck = document.getElementById('qualityCheck').checked;
-    const accessResult = document.querySelector('.access-result');
-    const resultText = document.querySelector('.result-text');
-    
-    // Simulate access check
-    setTimeout(() => {
-        let allowed = true;
-        let message = 'Access granted';
-        
-        if (barcodeRequired && !hasBarcodeScanned()) {
-            allowed = false;
-            message = 'Barcode scan required';
-        } else if (operatorAuth && !hasOperatorAuth()) {
-            allowed = false;
-            message = 'Operator authentication required';
-        } else if (qualityCheck && !hasQualityCheck()) {
-            allowed = false;
-            message = 'Quality check failed';
-        }
-        
-        // Update result display
-        accessResult.classList.remove('allowed', 'blocked');
-        accessResult.classList.add(allowed ? 'allowed' : 'blocked');
-        resultText.textContent = message;
-        
-        // Reset after 3 seconds
-        setTimeout(() => {
-            accessResult.classList.remove('allowed', 'blocked');
-            resultText.textContent = 'Click to test access rules';
-        }, 3000);
-    }, 1000);
-}
-
-function saveConfiguration() {
-    const torqueTarget = document.getElementById('torqueTarget').value;
-    const angleTarget = document.getElementById('angleTarget').value;
-    const tolerance = document.getElementById('tolerance').value;
-    const saveBtn = document.querySelector('.save-btn');
-    
-    // Show saving animation
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    saveBtn.disabled = true;
-    
-    // Simulate save process
-    setTimeout(() => {
-        saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-        saveBtn.style.background = '#38a169';
-        
-        // Show configuration summary
-        showNotification(`Configuration saved: Torque ${torqueTarget}Nm, Angle ${angleTarget}°, Tolerance ${tolerance}%`);
-        
-        // Reset button after 2 seconds
-        setTimeout(() => {
-            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Configuration';
-            saveBtn.style.background = '#38a169';
-            saveBtn.disabled = false;
-        }, 2000);
+        nextStep();
     }, 1500);
 }
 
-// 4. System Integration Functions
-
-function startDataFlow() {
-    const dataPackets = document.querySelectorAll('.data-packet');
-    const systems = document.querySelectorAll('.system');
+function invalidScan() {
+    const scanResult = document.getElementById('scan-result');
+    const stepStatus = document.getElementById('step1-status');
     
-    // Animate data packets
-    dataPackets.forEach((packet, index) => {
-        setTimeout(() => {
-            packet.classList.add('animate');
-        }, index * 800);
-    });
+    // Play error sound
+    playSound(failSound);
     
-    // Animate systems
-    systems.forEach((system, index) => {
-        setTimeout(() => {
-            system.style.transform = 'scale(1.1)';
-            system.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.3)';
-        }, index * 1000);
-    });
+    // Update display
+    stepStatus.textContent = '❌ Error';
+    stepStatus.style.background = '#f8d7da';
+    stepStatus.style.color = '#721c24';
     
-    // Reset animations
+    // Show error result
+    scanResult.innerHTML = '❌ Invalid Barcode — Try Again';
+    scanResult.className = 'result-display error';
+    
+    // Reset after 2 seconds
     setTimeout(() => {
-        dataPackets.forEach(packet => packet.classList.remove('animate'));
-        systems.forEach(system => {
-            system.style.transform = 'scale(1)';
-            system.style.boxShadow = 'none';
-        });
+        resetStep1();
+    }, 2000);
+}
+
+function resetStep1() {
+    const scanResult = document.getElementById('scan-result');
+    const stepStatus = document.getElementById('step1-status');
+    
+    // Clear scan result
+    scanResult.innerHTML = '';
+    scanResult.className = 'result-display';
+    
+    // Reset barcode text to initial state using the dedicated function
+    setBarcodeText('Ready to scan...');
+    
+    // Reset step status
+    stepStatus.textContent = '⏳ Waiting...';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
+}
+
+// Step 2: Place Component
+function placeComponent() {
+    const componentPlaceholder = document.querySelector('.component-placeholder');
+    const partSensor = document.getElementById('part-sensor');
+    const stepStatus = document.getElementById('step2-status');
+    
+    // Update component area
+    componentPlaceholder.classList.add('has-component');
+    componentPlaceholder.querySelector('span').textContent = 'Component Placed';
+    
+    // Update sensor status
+    partSensor.textContent = '✅ OK';
+    partSensor.className = 'sensor-value ok';
+    
+    // Update step status
+    stepStatus.textContent = '✅ Complete';
+    stepStatus.style.background = '#d4edda';
+    stepStatus.style.color = '#155724';
+    
+    // Enable next step
+    setTimeout(() => {
+        nextStep();
+    }, 1000);
+}
+
+function resetStep2() {
+    const componentPlaceholder = document.querySelector('.component-placeholder');
+    const partSensor = document.getElementById('part-sensor');
+    const stepStatus = document.getElementById('step2-status');
+    
+    componentPlaceholder.classList.remove('has-component');
+    componentPlaceholder.querySelector('span').textContent = 'Place Component Here';
+    partSensor.textContent = '❌ Not Detected';
+    partSensor.className = 'sensor-value not-detected';
+    stepStatus.textContent = '⏳ Waiting...';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
+}
+
+// Step 3: Press Cycle Start
+function startCycle() {
+    const cylinderPiston = document.getElementById('cylinder-piston');
+    const cylinderStatus = document.getElementById('cylinder-status');
+    const reedIndicator = document.getElementById('reed-indicator');
+    const stepStatus = document.getElementById('step3-status');
+    const blinkMessage = document.querySelector('.blink-message');
+    
+    // Hide blinking message
+    if (blinkMessage) {
+        blinkMessage.style.display = 'none';
+    }
+    
+    // Animate cylinder forward
+    cylinderPiston.classList.add('extended');
+    cylinderStatus.textContent = 'Extended';
+    
+    // Update reed switch
+    setTimeout(() => {
+        reedIndicator.textContent = '🟢';
+        reedIndicator.classList.add('active');
+    }, 500);
+    
+    // Update step status
+    stepStatus.textContent = '✅ Complete';
+    stepStatus.style.background = '#d4edda';
+    stepStatus.style.color = '#155724';
+    
+    // Auto advance to next step
+    setTimeout(() => {
+        nextStep();
+    }, 1500);
+}
+
+function resetStep3() {
+    const cylinderPiston = document.getElementById('cylinder-piston');
+    const cylinderStatus = document.getElementById('cylinder-status');
+    const reedIndicator = document.getElementById('reed-indicator');
+    const stepStatus = document.getElementById('step3-status');
+    const blinkMessage = document.querySelector('.blink-message');
+    
+    cylinderPiston.classList.remove('extended');
+    cylinderStatus.textContent = 'Retracted';
+    reedIndicator.textContent = '🔴';
+    reedIndicator.classList.remove('active');
+    stepStatus.textContent = '⏳ Waiting...';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
+    
+    // Show blinking message again
+    if (blinkMessage) {
+        blinkMessage.style.display = 'inline-block';
+    }
+}
+
+// Step 4: Tightening Process
+function resetStep4() {
+    const stepStatus = document.getElementById('step4-status');
+    const tighteningResult = document.getElementById('tightening-result');
+    
+    // Reset chart
+    resetChart();
+    
+    // Reset metrics
+    document.getElementById('current-torque').textContent = '0.0 Nm';
+    document.getElementById('current-angle').textContent = '0°';
+    
+    // Reset result display
+    tighteningResult.innerHTML = '';
+    tighteningResult.className = 'result-display';
+    
+    // Update step status
+    stepStatus.textContent = '⏳ Waiting...';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
+    
+    // Start tightening process
+    setTimeout(() => {
+        startTighteningProcess();
+    }, 1000);
+}
+
+function startTighteningProcess() {
+    const stepStatus = document.getElementById('step4-status');
+    const tighteningResult = document.getElementById('tightening-result');
+    
+    stepStatus.textContent = '⚡ Processing...';
+    stepStatus.style.background = '#cce5ff';
+    stepStatus.style.color = '#004085';
+    
+    // Reset values
+    currentTorque = 0;
+    currentAngle = 0;
+    
+    // Start updating chart and metrics
+    tighteningInterval = setInterval(() => {
+        // Simulate torque and angle increase
+        currentTorque += Math.random() * 2 + 0.5;
+        currentAngle += Math.random() * 3 + 1;
+        
+        // Update display
+        document.getElementById('current-torque').textContent = `${currentTorque.toFixed(1)} Nm`;
+        document.getElementById('current-angle').textContent = `${Math.round(currentAngle)}°`;
+        
+        // Update chart
+        updateChart(currentTorque, currentAngle);
+        
+        // Check if tightening is complete
+        if (currentTorque >= 25.0 && currentAngle >= 90) {
+            clearInterval(tighteningInterval);
+            completeTightening();
+        }
+    }, 100);
+}
+
+function completeTightening() {
+    const stepStatus = document.getElementById('step4-status');
+    const tighteningResult = document.getElementById('tightening-result');
+    
+    // Update final values
+    cycleData.finalTorque = currentTorque;
+    cycleData.finalAngle = Math.round(currentAngle);
+    
+    // Show popup for user to choose pass/fail simulation
+    showPassFailModal();
+}
+
+function showPassFailModal() {
+    const modal = document.getElementById('pass-fail-modal');
+    modal.classList.remove('hidden');
+}
+
+function hidePassFailModal() {
+    const modal = document.getElementById('pass-fail-modal');
+    modal.classList.add('hidden');
+}
+
+function simulatePass() {
+    const stepStatus = document.getElementById('step4-status');
+    const tighteningResult = document.getElementById('tightening-result');
+    
+    isPassSequence = true;
+    cycleData.result = 'PASS';
+    
+    // Pass result
+    playSound(passSound);
+    stepStatus.textContent = '✅ Complete';
+    stepStatus.style.background = '#d4edda';
+    stepStatus.style.color = '#155724';
+    tighteningResult.innerHTML = '✅ PASS - All specifications met';
+    tighteningResult.className = 'result-display success';
+    
+    hidePassFailModal();
+    
+    // Show blinking message for 5 seconds
+    showBlinkingMessage();
+    
+    // Auto advance to next step after 5 seconds
+    setTimeout(() => {
+        nextStep();
     }, 5000);
 }
 
-function addDatabaseEntry() {
-    const dbRows = document.querySelector('.db-rows');
-    const jobIds = ['JOB001', 'JOB002', 'JOB003', 'JOB004', 'JOB005'];
-    const torques = ['52.3', '48.7', '51.2', '49.8', '53.1'];
-    const angles = ['87.2', '89.5', '86.8', '90.1', '88.3'];
-    const results = ['OK', 'OK', 'NOT OK', 'OK', 'OK'];
+function showBlinkingMessage() {
+    const tighteningResult = document.getElementById('tightening-result');
     
-    const randomIndex = Math.floor(Math.random() * jobIds.length);
+    // Show blinking message
+    tighteningResult.innerHTML = '🔄 Reverse Disable Confirmed';
+    tighteningResult.className = 'result-display blinking';
     
-    const newRow = document.createElement('div');
-    newRow.className = 'db-row new-entry';
-    newRow.innerHTML = `
-        <span>${jobIds[randomIndex]}</span>
-        <span>${torques[randomIndex]} Nm</span>
-        <span>${angles[randomIndex]}°</span>
-        <span class="${results[randomIndex] === 'OK' ? 'success' : 'error'}">${results[randomIndex]}</span>
-    `;
-    
-    dbRows.appendChild(newRow);
-    
-    // Remove new-entry class after animation
+    // Remove blinking class after 5 seconds
     setTimeout(() => {
-        newRow.classList.remove('new-entry');
-    }, 500);
+        tighteningResult.innerHTML = '✅ PASS - All specifications met';
+        tighteningResult.className = 'result-display success';
+    }, 5000);
+}
+
+function simulateFail() {
+    const stepStatus = document.getElementById('step4-status');
+    const tighteningResult = document.getElementById('tightening-result');
     
-    // Limit rows to 5
-    if (dbRows.children.length > 5) {
-        dbRows.removeChild(dbRows.firstChild);
+    isPassSequence = false;
+    cycleData.result = 'FAIL';
+    
+    // Fail result
+    playSound(failSound);
+    stepStatus.textContent = '❌ Failed';
+    stepStatus.style.background = '#f8d7da';
+    stepStatus.style.color = '#721c24';
+    tighteningResult.innerHTML = '❌ FAIL - Specifications not met';
+    tighteningResult.className = 'result-display error';
+    
+    hidePassFailModal();
+    
+    // Go directly to Step 6 (Fail Sequence) instead of Step 5
+    setTimeout(() => {
+        currentStep = 6;
+        showStep(6);
+        updateProgress();
+        updateNavigationButtons();
+    }, 2000);
+}
+
+// Chart Functions
+function initializeChart() {
+    const ctx = document.getElementById('torque-chart').getContext('2d');
+    torqueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Torque (Nm)',
+                data: [],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Angle (degrees)',
+                data: [],
+                borderColor: '#764ba2',
+                backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                tension: 0.4,
+                fill: true,
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Time (s)'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Torque (Nm)'
+                    },
+                    min: 0,
+                    max: 30
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Angle (degrees)'
+                    },
+                    min: 0,
+                    max: 120,
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        }
+    });
+}
+
+function updateChart(torque, angle) {
+    const timePoint = torqueChart.data.labels.length;
+    
+    torqueChart.data.labels.push(timePoint);
+    torqueChart.data.datasets[0].data.push(torque);
+    torqueChart.data.datasets[1].data.push(angle);
+    
+    // Keep only last 50 points for performance
+    if (torqueChart.data.labels.length > 50) {
+        torqueChart.data.labels.shift();
+        torqueChart.data.datasets[0].data.shift();
+        torqueChart.data.datasets[1].data.shift();
     }
+    
+    torqueChart.update('none');
 }
 
-function uploadReports() {
-    const reportItems = document.querySelectorAll('.report-item');
-    const uploadFill = document.querySelector('.upload-fill');
-    const uploadText = document.querySelector('.upload-text');
-    const serverSync = document.querySelector('.server-sync');
-    
-    // Animate each report upload
-    reportItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.classList.add('uploading');
-            item.innerHTML += ' <i class="fas fa-spinner fa-spin"></i>';
-        }, index * 1000);
-        
-        setTimeout(() => {
-            item.classList.remove('uploading');
-            item.classList.add('completed');
-            item.innerHTML = item.innerHTML.replace('<i class="fas fa-spinner fa-spin"></i>', '<i class="fas fa-check"></i>');
-        }, (index + 1) * 1000);
-    });
-    
-    // Animate progress bar
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += 1;
-        uploadFill.style.width = progress + '%';
-        uploadText.textContent = `Uploading... ${progress}%`;
-        
-        if (progress >= 100) {
-            clearInterval(interval);
-            uploadText.textContent = 'Upload complete!';
-            serverSync.style.background = '#f0fff4';
-            serverSync.style.border = '2px solid #9ae6b4';
-            
-            // Reset after 3 seconds
-            setTimeout(() => {
-                reportItems.forEach(item => {
-                    item.classList.remove('completed');
-                    item.innerHTML = item.innerHTML.replace('<i class="fas fa-check"></i>', '');
-                });
-                uploadFill.style.width = '0%';
-                uploadText.textContent = 'Ready to upload';
-                serverSync.style.background = '#f7fafc';
-                serverSync.style.border = 'none';
-            }, 3000);
-        }
-    }, 30);
+function resetChart() {
+    torqueChart.data.labels = [];
+    torqueChart.data.datasets[0].data = [];
+    torqueChart.data.datasets[1].data = [];
+    torqueChart.update();
 }
 
-// 5. Analytics Functions
-
-function startDataProcessing() {
-    const dataPoints = document.querySelectorAll('.data-point');
-    const pipelineStages = document.querySelectorAll('.pipeline-stage');
+// Step 5: Pass Sequence
+function showPassSequence() {
+    const passCylinderPiston = document.getElementById('pass-cylinder-piston');
+    const passCylinderStatus = document.getElementById('pass-cylinder-status');
+    const stepStatus = document.getElementById('step5-status');
     
-    // Animate data points
-    dataPoints.forEach((point, index) => {
-        setTimeout(() => {
-            point.classList.add('animate');
-        }, index * 500);
-    });
-    
-    // Animate pipeline stages
-    pipelineStages.forEach((stage, index) => {
-        setTimeout(() => {
-            stage.classList.add('active');
-        }, index * 1000);
-    });
-    
-    // Reset animations
+    // Animate cylinder retraction
+    passCylinderPiston.classList.add('extended');
     setTimeout(() => {
-        dataPoints.forEach(point => point.classList.remove('animate'));
-        pipelineStages.forEach(stage => stage.classList.remove('active'));
-    }, 4000);
+        passCylinderPiston.classList.remove('extended');
+        passCylinderStatus.textContent = 'Retracted';
+    }, 1000);
+    
+    // Update step status
+    stepStatus.textContent = '✅ Complete';
+    stepStatus.style.background = '#d4edda';
+    stepStatus.style.color = '#155724';
 }
 
-function updateAnalytics() {
-    // Update torque chart
-    updateTorqueChart();
-    
-    // Update failure rate
-    updateFailureRate();
-    
-    // Update heatmap
-    updateHeatmap();
-    
-    showNotification('Analytics updated with latest data');
+function removeComponent() {
+    // Show summary report
+    showSummaryReport();
 }
 
-function triggerAlert() {
-    const alertItems = document.querySelectorAll('.alert-item');
-    const alertHistory = document.querySelector('.alert-history');
+// Step 6: Fail Sequence
+function showFailSequence() {
+    const stepStatus = document.getElementById('step6-status');
+    stepStatus.textContent = '⏳ Starting Fail Sequence...';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
     
-    // Randomly select an alert to trigger
-    const randomAlert = alertItems[Math.floor(Math.random() * alertItems.length)];
-    randomAlert.classList.add('animate');
+    // Start the fail sequence automatically
+    startFailSequence();
+}
+
+function startFailSequence() {
+    const statusText = document.getElementById('fail-status-text');
+    const statusMessage = document.getElementById('fail-status-message');
+    const stepStatus = document.getElementById('step6-status');
     
-    // Add to history
-    const timestamp = new Date().toLocaleTimeString();
-    const alertText = randomAlert.querySelector('span').textContent;
-    const historyItem = document.createElement('div');
-    historyItem.className = 'history-item';
-    historyItem.textContent = `${timestamp} - ${alertText}`;
+    // Initial status
+    stepStatus.textContent = '🔄 Fail Sequence Started';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
     
-    alertHistory.insertBefore(historyItem, alertHistory.firstChild);
+    // Message 1: Part Clamp Reversing
+    statusText.textContent = '🔄 Part Clamp Reversing...';
+    statusMessage.className = 'status-message updating';
     
-    // Remove animation class
+    // After 5 seconds: Part Clamp Reverse Reed Switch OK
     setTimeout(() => {
-        randomAlert.classList.remove('animate');
-    }, 500);
+        statusText.textContent = '✅ Part Clamp Reverse Reed Switch OK';
+        statusMessage.className = 'status-message success';
+    }, 5000);
     
-    // Limit history items
-    if (alertHistory.children.length > 5) {
-        alertHistory.removeChild(alertHistory.lastChild);
-    }
-}
-
-// 6. ROI Functions
-
-function updateROIChart() {
-    const canvas = document.getElementById('roiChart');
-    if (!canvas) return;
+    // After 3 more seconds (8 total): Move Component Sensor to Rejection Bin
+    setTimeout(() => {
+        statusText.textContent = '📦 Move Component Sensor to Rejection Bin';
+        statusMessage.className = 'status-message updating';
+    }, 8000);
     
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    // Draw ROI chart
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(20, height - 60, 40, 60);
-    
-    ctx.fillStyle = '#38a169';
-    ctx.fillRect(70, height - 100, 40, 100);
-    
-    ctx.fillStyle = '#e53e3e';
-    ctx.fillRect(120, height - 40, 40, 40);
-    
-    ctx.fillStyle = '#d69e2e';
-    ctx.fillRect(170, height - 80, 40, 80);
-    
-    // Add labels
-    ctx.fillStyle = '#4a5568';
-    ctx.font = '12px Roboto';
-    ctx.textAlign = 'center';
-    ctx.fillText('Q1', 40, height - 5);
-    ctx.fillText('Q2', 90, height - 5);
-    ctx.fillText('Q3', 140, height - 5);
-    ctx.fillText('Q4', 190, height - 5);
-}
-
-// 7. Workflow Functions
-
-function startWorkflow() {
-    if (isWorkflowRunning) return;
-    
-    isWorkflowRunning = true;
-    currentWorkflowStep = 1;
-    
-    const timelineSteps = document.querySelectorAll('.timeline-step');
-    
-    // Reset all steps
-    timelineSteps.forEach(step => {
-        step.classList.remove('active', 'completed');
-    });
-    
-    // Start workflow progression
-    function progressWorkflow() {
-        if (currentWorkflowStep > 6) {
-            isWorkflowRunning = false;
-            return;
-        }
+    // After 3 more seconds (11 total): Rejection Bin Sensor Sensed
+    setTimeout(() => {
+        statusText.textContent = '✅ Rejection Bin Sensor Sensed';
+        statusMessage.className = 'status-message success';
         
-        const currentStep = document.querySelector(`[data-step="${currentWorkflowStep}"]`);
-        const previousStep = document.querySelector(`[data-step="${currentWorkflowStep - 1}"]`);
-        
-        if (previousStep) {
-            previousStep.classList.remove('active');
-            previousStep.classList.add('completed');
-        }
-        
-        currentStep.classList.add('active');
-        
-        // Simulate step processing
+        // Hide rejection bin image and show password section
         setTimeout(() => {
-            currentWorkflowStep++;
-            progressWorkflow();
+            hideRejectionBinAndShowPassword();
+        }, 2000);
+    }, 11000);
+}
+
+function hideRejectionBinAndShowPassword() {
+    const rejectionSection = document.getElementById('rejection-section');
+    const passwordSection = document.getElementById('password-section');
+    const statusText = document.getElementById('fail-status-text');
+    const statusMessage = document.getElementById('fail-status-message');
+    const stepStatus = document.getElementById('step6-status');
+    
+    // Hide rejection bin section
+    rejectionSection.style.display = 'none';
+    
+    // Show password section
+    passwordSection.classList.remove('hidden');
+    
+    // Update status
+    statusText.textContent = '🔒 Enter Password to Activate Tool';
+    statusMessage.className = 'status-message updating';
+    
+    stepStatus.textContent = '🔒 Tool Locked - Password Required';
+    stepStatus.style.background = '#f8d7da';
+    stepStatus.style.color = '#721c24';
+}
+
+function moveToRejection() {
+    const rejectionSensor = document.getElementById('rejection-sensor');
+    const stepStatus = document.getElementById('step6-status');
+    
+    // Update rejection sensor
+    rejectionSensor.textContent = '✅ Triggered';
+    rejectionSensor.style.background = '#d4edda';
+    rejectionSensor.style.color = '#155724';
+    
+    // Update step status
+    stepStatus.textContent = '⏳ Rejection Bin Sensing...';
+    stepStatus.style.background = '#fff3cd';
+    stepStatus.style.color = '#856404';
+    
+    // The status bar will automatically update after 3 seconds (11 total seconds from start)
+    // This function is now just for the sensor update
+}
+
+function submitPassword() {
+    const passwordInput = document.getElementById('password-input');
+    const password = passwordInput.value;
+    const stepStatus = document.getElementById('step6-status');
+    const statusText = document.getElementById('fail-status-text');
+    const statusMessage = document.getElementById('fail-status-message');
+    
+    if (password === '1234') { // Demo password
+        // Password correct - show "Remove Component"
+        stepStatus.textContent = '✅ Password accepted - Tool activated';
+        stepStatus.style.background = '#d4edda';
+        stepStatus.style.color = '#155724';
+        
+        statusText.textContent = '📦 Remove Component';
+        statusMessage.className = 'status-message success';
+        
+        // Clear password input
+        passwordInput.value = '';
+        
+        // Show "Remove Component" message and then reset to barcode scan
+        setTimeout(() => {
+            showRemoveComponentMessage();
+        }, 3000);
+    } else {
+        // Show error
+        passwordInput.style.borderColor = '#dc3545';
+        passwordInput.style.boxShadow = '0 0 0 3px rgba(220, 53, 69, 0.1)';
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            passwordInput.style.borderColor = '#dee2e6';
+            passwordInput.style.boxShadow = 'none';
+            passwordInput.value = '';
         }, 2000);
     }
-    
-    progressWorkflow();
 }
 
-function resetWorkflow() {
-    isWorkflowRunning = false;
-    currentWorkflowStep = 1;
+function showRemoveComponentMessage() {
+    const stepStatus = document.getElementById('step6-status');
+    const statusText = document.getElementById('fail-status-text');
+    const statusMessage = document.getElementById('fail-status-message');
     
-    const timelineSteps = document.querySelectorAll('.timeline-step');
-    timelineSteps.forEach(step => {
-        step.classList.remove('active', 'completed');
-    });
+    // Show "Remove Component" message
+    stepStatus.textContent = '📦 Component Removed';
+    stepStatus.style.background = '#d4edda';
+    stepStatus.style.color = '#155724';
     
-    // Activate first step
-    const firstStep = document.querySelector('[data-step="1"]');
-    if (firstStep) {
-        firstStep.classList.add('active');
-    }
-}
-
-// Helper Functions
-
-function initializeCharts() {
-    updateTorqueChart();
-    updateFailureRate();
-    updateHeatmap();
-    updateROIChart();
-}
-
-function updateTorqueChart() {
-    const canvas = document.getElementById('torqueChart');
-    if (!canvas) return;
+    statusText.textContent = '🔄 Ready for new cycle - Please scan barcode';
+    statusMessage.className = 'status-message updating';
     
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    // Draw simple line chart
-    ctx.strokeStyle = '#667eea';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    
-    const data = [45, 52, 48, 55, 50, 53, 47, 51];
-    const stepX = width / (data.length - 1);
-    const maxValue = Math.max(...data);
-    
-    data.forEach((value, index) => {
-        const x = index * stepX;
-        const y = height - (value / maxValue) * height;
-        
-        if (index === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    });
-    
-    ctx.stroke();
-}
-
-function updateFailureRate() {
-    const rateValue = document.querySelector('.rate-value');
-    if (rateValue) {
-        const newRate = (Math.random() * 5).toFixed(1);
-        rateValue.textContent = newRate + '%';
-        
-        // Update circle color based on rate
-        const rateCircle = document.querySelector('.rate-circle');
-        if (newRate < 2) {
-            rateCircle.style.background = 'conic-gradient(#38a169 0deg ' + (newRate * 7.2) + 'deg, #e2e8f0 ' + (newRate * 7.2) + 'deg 360deg)';
-            rateValue.style.color = '#38a169';
-        } else if (newRate < 4) {
-            rateCircle.style.background = 'conic-gradient(#d69e2e 0deg ' + (newRate * 7.2) + 'deg, #e2e8f0 ' + (newRate * 7.2) + 'deg 360deg)';
-            rateValue.style.color = '#d69e2e';
-        } else {
-            rateCircle.style.background = 'conic-gradient(#e53e3e 0deg ' + (newRate * 7.2) + 'deg, #e2e8f0 ' + (newRate * 7.2) + 'deg 360deg)';
-            rateValue.style.color = '#e53e3e';
-        }
-    }
-}
-
-function updateHeatmap() {
-    const heatmapCells = document.querySelectorAll('.heatmap-cell');
-    const times = ['38s', '41s', '45s', '42s', '39s', '43s', '40s', '44s'];
-    
-    heatmapCells.forEach((cell, index) => {
-        const time = times[Math.floor(Math.random() * times.length)];
-        cell.textContent = time;
-        
-        const seconds = parseInt(time);
-        if (seconds < 40) {
-            cell.className = 'heatmap-cell low';
-        } else if (seconds < 43) {
-            cell.className = 'heatmap-cell medium';
-        } else {
-            cell.className = 'heatmap-cell high';
-        }
-    });
-}
-
-function showNotification(message) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #667eea;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
+    // Auto advance to step 1 (barcode scan) after delay
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
+        currentStep = 1;
+        showStep(1);
+        updateProgress();
+        updateNavigationButtons();
+        setBarcodeText('Ready to scan...');
     }, 3000);
 }
 
-// Mock functions for access control
-function hasBarcodeScanned() {
-    return Math.random() > 0.3;
+function showFailResults() {
+    const stepStatus = document.getElementById('step6-status');
+    const resetMessage = document.getElementById('reset-tool-message');
+    
+    // Show fail results
+    stepStatus.textContent = '❌ FAIL - Component rejected';
+    stepStatus.style.background = '#f8d7da';
+    stepStatus.style.color = '#721c24';
+    
+    resetMessage.textContent = '📱 Please scan barcode to start new cycle';
+    resetMessage.style.color = '#856404';
+    resetMessage.style.background = '#fff3cd';
+    resetMessage.style.borderColor = '#ffeaa7';
+    
+    // Auto advance to step 1 (barcode scan) after delay
+    setTimeout(() => {
+        currentStep = 1;
+        showStep(1);
+        updateProgress();
+        updateNavigationButtons();
+        setBarcodeText('Ready to scan...');
+    }, 3000);
 }
 
-function hasOperatorAuth() {
-    return Math.random() > 0.2;
+// Summary Report
+function showSummaryReport() {
+    const summaryReport = document.getElementById('summary-report');
+    
+    // Calculate cycle time
+    cycleData.cycleTime = ((Date.now() - cycleData.startTime) / 1000).toFixed(1);
+    
+    // Update summary data
+    document.getElementById('summary-barcode').textContent = cycleData.barcode;
+    document.getElementById('summary-torque').textContent = `${cycleData.finalTorque.toFixed(1)} Nm`;
+    document.getElementById('summary-angle').textContent = `${cycleData.finalAngle}°`;
+    document.getElementById('summary-result').textContent = cycleData.result;
+    document.getElementById('summary-time').textContent = `${cycleData.cycleTime}s`;
+    
+    // Show summary
+    summaryReport.classList.remove('hidden');
 }
 
-function hasQualityCheck() {
-    return Math.random() > 0.1;
+function closeSummary() {
+    document.getElementById('summary-report').classList.add('hidden');
 }
 
-// Auto-update functions for real-time simulation
-setInterval(() => {
-    if (Math.random() > 0.7) {
-        updateToolStatus();
-    }
-}, 10000);
+function restartCycle() {
+    // Reset all data
+    cycleData = {
+        barcode: '',
+        finalTorque: 0,
+        finalAngle: 0,
+        result: '',
+        cycleTime: 0,
+        startTime: Date.now()
+    };
+    
+    // Reset to step 1
+    currentStep = 1;
+    showStep(1);
+    updateProgress();
+    updateNavigationButtons();
+    
+    // Close summary
+    closeSummary();
+    
+    // Reset barcode text
+    setBarcodeText('Ready to scan...');
+    
+    // Toggle pass/fail for variety
+    isPassSequence = Math.random() > 0.3;
+}
 
-setInterval(() => {
-    if (Math.random() > 0.8) {
-        updateAnalytics();
+// Utility Functions
+function playSound(audioElement) {
+    if (audioElement) {
+        audioElement.currentTime = 0;
+        audioElement.play().catch(e => console.log('Audio play failed:', e));
     }
-}, 15000);
+}
 
-setInterval(() => {
-    if (Math.random() > 0.9) {
-        triggerAlert();
+// Add some visual feedback for sensor status
+function updateSensorStatus(sensorId, status, isOK) {
+    const sensor = document.getElementById(sensorId);
+    if (sensor) {
+        sensor.textContent = isOK ? '✅ OK' : '❌ Not Detected';
+        sensor.style.background = isOK ? '#d4edda' : '#f8d7da';
+        sensor.style.color = isOK ? '#155724' : '#721c24';
     }
-}, 20000);
+}
 
-// Keyboard shortcuts
+// Add keyboard shortcuts for demo
 document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey || e.metaKey) {
-        switch(e.key) {
-            case '1':
-                e.preventDefault();
-                document.querySelector('[href="#overview"]').click();
-                break;
-            case '2':
-                e.preventDefault();
-                document.querySelector('[href="#integration"]').click();
-                break;
-            case '3':
-                e.preventDefault();
-                document.querySelector('[href="#customization"]').click();
-                break;
-            case '4':
-                e.preventDefault();
-                document.querySelector('[href="#integration-systems"]').click();
-                break;
-            case '5':
-                e.preventDefault();
-                document.querySelector('[href="#analytics"]').click();
-                break;
-            case '6':
-                e.preventDefault();
-                document.querySelector('[href="#roi"]').click();
-                break;
-            case '7':
-                e.preventDefault();
-                document.querySelector('[href="#workflow"]').click();
-                break;
-        }
+    switch(e.key) {
+        case 'ArrowLeft':
+            if (!prevStepBtn.disabled) previousStep();
+            break;
+        case 'ArrowRight':
+            if (!nextStepBtn.disabled) nextStep();
+            break;
+        case 'Enter':
+            if (currentStep === 1) scanBarcode();
+            else if (currentStep === 2) placeComponent();
+            else if (currentStep === 3) startCycle();
+            break;
     }
 });
 
-// Add loading states to buttons
-document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', function() {
-        if (!this.disabled) {
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        }
-    });
+// Add touch support for mobile
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
 });
 
-// Initialize the demo
-console.log('PF6000 Open Protocol Animation Demo loaded successfully!');
-console.log('Use Ctrl/Cmd + 1-7 for quick navigation between sections.'); 
+document.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = touchStartX - touchEndX;
+    
+    if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0 && !nextStepBtn.disabled) {
+            // Swipe left - next step
+            nextStep();
+        } else if (diff < 0 && !prevStepBtn.disabled) {
+            // Swipe right - previous step
+            previousStep();
+        }
+    }
+} 

@@ -3,613 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PF6000 Open Protocol Animation Demo</title>
+    <title>Automated Barcode & Tightening System</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <!-- Navigation -->
-        <nav class="navbar">
-            <div class="nav-brand">
-                <i class="fas fa-cogs"></i>
-                <span>PF6000 Open Protocol Demo</span>
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="screen active">
+        <div class="intro-container">
+            <div class="logo-section">
+                <div class="logo-icon">🔧</div>
+                <h1>Automated Barcode & Tightening System</h1>
+                <h2>Powered by Atlas Copco Power Focus Controller</h2>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#overview" class="nav-link active">Overview</a></li>
-                <li><a href="#integration" class="nav-link">Integration</a></li>
-                <li><a href="#customization" class="nav-link">Customization</a></li>
-                <li><a href="#integration-systems" class="nav-link">System Integration</a></li>
-                <li><a href="#analytics" class="nav-link">Analytics</a></li>
-                <li><a href="#roi" class="nav-link">ROI</a></li>
-                <li><a href="#workflow" class="nav-link">Workflow</a></li>
-            </ul>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- 1. Open Protocol Communication Overview -->
-            <section id="overview" class="demo-section active">
-                <h2><i class="fas fa-network-wired"></i> Open Protocol Communication Overview</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>Network Communication Flowchart</h3>
-                        <div class="flowchart-container">
-                            <div class="device pf6000">
-                                <i class="fas fa-tools"></i>
-                                <span>PF6000</span>
-                            </div>
-                            <div class="device pc">
-                                <i class="fas fa-desktop"></i>
-                                <span>PC Software</span>
-                            </div>
-                            <div class="device plc">
-                                <i class="fas fa-microchip"></i>
-                                <span>PLC</span>
-                            </div>
-                            <div class="device scanner">
-                                <i class="fas fa-barcode"></i>
-                                <span>Barcode Scanner</span>
-                            </div>
-                            <div class="connection-lines"></div>
-                        </div>
-                        <button class="demo-btn" onclick="startFlowchartAnimation()">Start Animation</button>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>TCP/IP Packet Animation</h3>
-                        <div class="packet-animation">
-                            <div class="packet pf6000-packet">
-                                <span>Job Request</span>
-                            </div>
-                            <div class="packet pc-packet">
-                                <span>Job Data</span>
-                            </div>
-                            <div class="packet result-packet">
-                                <span>Result OK</span>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="startPacketAnimation()">Animate Packets</button>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Barcode Job Selection</h3>
-                        <div class="barcode-simulation">
-                            <div class="barcode-scanner">
-                                <i class="fas fa-barcode"></i>
-                                <div class="scan-line"></div>
-                            </div>
-                            <div class="job-display">
-                                <div class="job-item" data-job="JOB001">JOB001 - Engine Mount</div>
-                                <div class="job-item" data-job="JOB002">JOB002 - Wheel Nut</div>
-                                <div class="job-item" data-job="JOB003">JOB003 - Brake Caliper</div>
-                            </div>
-                            <div class="acknowledgment">
-                                <span class="ack-text">Waiting for scan...</span>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="simulateBarcodeScan()">Simulate Scan</button>
-                    </div>
+            
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="step-icon">📱</div>
+                    <span>Scan</span>
                 </div>
-            </section>
-
-            <!-- 2. Integration with Barcode, PLC, and PC -->
-            <section id="integration" class="demo-section">
-                <h2><i class="fas fa-plug"></i> Integration with Barcode, PLC, and PC</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>Barcode Trigger Simulation</h3>
-                        <div class="trigger-simulation">
-                            <div class="barcode-area">
-                                <div class="barcode" id="demoBarcode">123456789</div>
-                                <button class="scan-btn" onclick="triggerBarcodeScan()">
-                                    <i class="fas fa-barcode"></i> Scan Barcode
-                                </button>
-                            </div>
-                            <div class="job-loading">
-                                <div class="loading-bar">
-                                    <div class="loading-progress"></div>
-                                </div>
-                                <span class="loading-text">Loading job...</span>
-                            </div>
-                            <div class="job-loaded">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Job loaded successfully!</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>PLC Signal Communication</h3>
-                        <div class="plc-communication">
-                            <div class="plc-panel">
-                                <div class="signal-btn" onclick="sendPLCSignal('START')">
-                                    <i class="fas fa-play"></i>
-                                    <span>START</span>
-                                </div>
-                                <div class="signal-btn" onclick="sendPLCSignal('STOP')">
-                                    <i class="fas fa-stop"></i>
-                                    <span>STOP</span>
-                                </div>
-                            </div>
-                            <div class="signal-flow">
-                                <div class="signal-arrow"></div>
-                            </div>
-                            <div class="pf6000-response">
-                                <div class="response-indicator">
-                                    <span class="response-text">Waiting for signal...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Live Tool Status Dashboard</h3>
-                        <div class="status-dashboard">
-                            <div class="tool-status ready">
-                                <i class="fas fa-circle"></i>
-                                <span>Tool 1: Ready</span>
-                            </div>
-                            <div class="tool-status running">
-                                <i class="fas fa-circle"></i>
-                                <span>Tool 2: Running</span>
-                            </div>
-                            <div class="tool-status complete">
-                                <i class="fas fa-circle"></i>
-                                <span>Tool 3: Complete</span>
-                            </div>
-                            <div class="tool-status error">
-                                <i class="fas fa-circle"></i>
-                                <span>Tool 4: Error</span>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="updateToolStatus()">Update Status</button>
-                    </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="step-icon">📦</div>
+                    <span>Place</span>
                 </div>
-            </section>
-
-            <!-- 3. Customizable Features Using APIs -->
-            <section id="customization" class="demo-section">
-                <h2><i class="fas fa-cogs"></i> Customizable Features Using APIs</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>Job Program Deployment</h3>
-                        <div class="deployment-simulation">
-                            <div class="deployment-controls">
-                                <button class="deploy-btn" onclick="deployToAllTools()">
-                                    <i class="fas fa-rocket"></i>
-                                    Deploy to All Tools
-                                </button>
-                                <div class="deployment-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill"></div>
-                                    </div>
-                                    <span class="progress-text">0%</span>
-                                </div>
-                            </div>
-                            <div class="tools-grid">
-                                <div class="tool-item" data-tool="1">Tool 1</div>
-                                <div class="tool-item" data-tool="2">Tool 2</div>
-                                <div class="tool-item" data-tool="3">Tool 3</div>
-                                <div class="tool-item" data-tool="4">Tool 4</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>User-Defined Rules</h3>
-                        <div class="rules-simulation">
-                            <div class="rule-config">
-                                <label>
-                                    <input type="checkbox" id="barcodeRequired" checked>
-                                    Require barcode scan before tool use
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="operatorAuth">
-                                    Require operator authentication
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="qualityCheck">
-                                    Enable quality check before completion
-                                </label>
-                            </div>
-                            <div class="rule-test">
-                                <button class="test-btn" onclick="testToolAccess()">
-                                    Test Tool Access
-                                </button>
-                                <div class="access-result">
-                                    <span class="result-text">Click to test access rules</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Configuration Interface</h3>
-                        <div class="config-interface">
-                            <div class="config-form">
-                                <div class="form-group">
-                                    <label>Torque Target (Nm):</label>
-                                    <input type="number" id="torqueTarget" value="50" min="0" max="1000">
-                                </div>
-                                <div class="form-group">
-                                    <label>Angle Target (deg):</label>
-                                    <input type="number" id="angleTarget" value="90" min="0" max="360">
-                                </div>
-                                <div class="form-group">
-                                    <label>Tolerance (%):</label>
-                                    <input type="number" id="tolerance" value="5" min="0" max="20">
-                                </div>
-                                <button class="save-btn" onclick="saveConfiguration()">
-                                    <i class="fas fa-save"></i>
-                                    Save Configuration
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="step-icon">⚡</div>
+                    <span>Tighten</span>
                 </div>
-            </section>
-
-            <!-- 4. Third-Party System Integration -->
-            <section id="integration-systems" class="demo-section">
-                <h2><i class="fas fa-database"></i> Third-Party System Integration</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>MES/ERP Data Flow</h3>
-                        <div class="data-flow-simulation">
-                            <div class="system pf6000-system">
-                                <i class="fas fa-tools"></i>
-                                <span>PF6000</span>
-                            </div>
-                            <div class="data-pipeline">
-                                <div class="data-packet">Job Data</div>
-                                <div class="data-packet">Torque Values</div>
-                                <div class="data-packet">Quality Results</div>
-                            </div>
-                            <div class="system mes-system">
-                                <i class="fas fa-industry"></i>
-                                <span>MES System</span>
-                            </div>
-                            <div class="system sap-system">
-                                <i class="fas fa-building"></i>
-                                <span>SAP ERP</span>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="startDataFlow()">Start Data Flow</button>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Database Storage Animation</h3>
-                        <div class="database-simulation">
-                            <div class="data-entry">
-                                <div class="entry-item">
-                                    <span class="label">Job ID:</span>
-                                    <span class="value">JOB001</span>
-                                </div>
-                                <div class="entry-item">
-                                    <span class="label">Torque:</span>
-                                    <span class="value">52.3 Nm</span>
-                                </div>
-                                <div class="entry-item">
-                                    <span class="label">Angle:</span>
-                                    <span class="value">87.2°</span>
-                                </div>
-                                <div class="entry-item">
-                                    <span class="label">Result:</span>
-                                    <span class="value success">OK</span>
-                                </div>
-                            </div>
-                            <div class="database-visual">
-                                <div class="db-table">
-                                    <div class="db-row header">
-                                        <span>Job ID</span>
-                                        <span>Torque</span>
-                                        <span>Angle</span>
-                                        <span>Result</span>
-                                    </div>
-                                    <div class="db-rows"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="addDatabaseEntry()">Add Entry</button>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Report Upload & Sync</h3>
-                        <div class="upload-simulation">
-                            <div class="report-generator">
-                                <div class="report-item">
-                                    <i class="fas fa-file-pdf"></i>
-                                    <span>Daily Report.pdf</span>
-                                </div>
-                                <div class="report-item">
-                                    <i class="fas fa-file-excel"></i>
-                                    <span>Quality Data.xlsx</span>
-                                </div>
-                                <div class="report-item">
-                                    <i class="fas fa-file-csv"></i>
-                                    <span>Production Log.csv</span>
-                                </div>
-                            </div>
-                            <div class="upload-progress">
-                                <div class="upload-bar">
-                                    <div class="upload-fill"></div>
-                                </div>
-                                <span class="upload-text">Ready to upload</span>
-                            </div>
-                            <div class="server-sync">
-                                <i class="fas fa-server"></i>
-                                <span>Central Server</span>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="uploadReports()">Upload Reports</button>
-                    </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="step-icon">✅</div>
+                    <span>Result</span>
                 </div>
-            </section>
-
-            <!-- 5. Data Processing & Analytics -->
-            <section id="analytics" class="demo-section">
-                <h2><i class="fas fa-chart-line"></i> Data Processing & Analytics</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>Real-Time Data Processing</h3>
-                        <div class="data-processing">
-                            <div class="data-stream">
-                                <div class="data-point">Raw: 52.3 Nm</div>
-                                <div class="data-point">Filtered: 52.1 Nm</div>
-                                <div class="data-point">Analyzed: OK</div>
-                            </div>
-                            <div class="processing-pipeline">
-                                <div class="pipeline-stage">
-                                    <i class="fas fa-download"></i>
-                                    <span>Collect</span>
-                                </div>
-                                <div class="pipeline-stage">
-                                    <i class="fas fa-filter"></i>
-                                    <span>Filter</span>
-                                </div>
-                                <div class="pipeline-stage">
-                                    <i class="fas fa-chart-bar"></i>
-                                    <span>Analyze</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="startDataProcessing()">Start Processing</button>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Analytics Dashboard</h3>
-                        <div class="analytics-dashboard">
-                            <div class="metric-card">
-                                <h4>Torque Trends</h4>
-                                <div class="chart-container">
-                                    <canvas id="torqueChart" width="200" height="100"></canvas>
-                                </div>
-                            </div>
-                            <div class="metric-card">
-                                <h4>Failure Rate</h4>
-                                <div class="failure-rate">
-                                    <div class="rate-circle">
-                                        <span class="rate-value">2.3%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="metric-card">
-                                <h4>Cycle Time Heat Map</h4>
-                                <div class="heatmap">
-                                    <div class="heatmap-cell high">45s</div>
-                                    <div class="heatmap-cell medium">42s</div>
-                                    <div class="heatmap-cell low">38s</div>
-                                    <div class="heatmap-cell medium">41s</div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="updateAnalytics()">Update Analytics</button>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Anomaly Detection Alerts</h3>
-                        <div class="alert-system">
-                            <div class="alert-panel">
-                                <div class="alert-item warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <span>Torque deviation detected</span>
-                                </div>
-                                <div class="alert-item error">
-                                    <i class="fas fa-times-circle"></i>
-                                    <span>Tool calibration required</span>
-                                </div>
-                                <div class="alert-item info">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Maintenance due in 2 days</span>
-                                </div>
-                            </div>
-                            <div class="alert-history">
-                                <div class="history-item">14:32 - Torque anomaly detected</div>
-                                <div class="history-item">14:15 - Quality threshold exceeded</div>
-                                <div class="history-item">13:58 - Tool status changed</div>
-                            </div>
-                        </div>
-                        <button class="demo-btn" onclick="triggerAlert()">Trigger Alert</button>
-                    </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="step-icon">🔄</div>
+                    <span>Next Cycle</span>
                 </div>
-            </section>
-
-            <!-- 6. ROI and Productivity Gains -->
-            <section id="roi" class="demo-section">
-                <h2><i class="fas fa-chart-pie"></i> ROI and Productivity Gains</h2>
-                
-                <div class="demo-grid">
-                    <div class="demo-card">
-                        <h3>Cycle Time Comparison</h3>
-                        <div class="cycle-comparison">
-                            <div class="comparison-chart">
-                                <div class="chart-bar current">
-                                    <div class="bar-fill" style="height: 60%"></div>
-                                    <span class="bar-label">Current: 45s</span>
-                                </div>
-                                <div class="chart-bar improved">
-                                    <div class="bar-fill" style="height: 40%"></div>
-                                    <span class="bar-label">Improved: 30s</span>
-                                </div>
-                            </div>
-                            <div class="improvement-stats">
-                                <div class="stat-item">
-                                    <span class="stat-value">33%</span>
-                                    <span class="stat-label">Time Reduction</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">+40%</span>
-                                    <span class="stat-label">Productivity</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>Rework & Downtime Reduction</h3>
-                        <div class="reduction-simulation">
-                            <div class="before-after">
-                                <div class="before">
-                                    <h4>Before</h4>
-                                    <div class="metric">
-                                        <span class="metric-value">15%</span>
-                                        <span class="metric-label">Rework Rate</span>
-                                    </div>
-                                    <div class="metric">
-                                        <span class="metric-value">120min</span>
-                                        <span class="metric-label">Daily Downtime</span>
-                                    </div>
-                                </div>
-                                <div class="after">
-                                    <h4>After</h4>
-                                    <div class="metric">
-                                        <span class="metric-value">3%</span>
-                                        <span class="metric-label">Rework Rate</span>
-                                    </div>
-                                    <div class="metric">
-                                        <span class="metric-value">20min</span>
-                                        <span class="metric-label">Daily Downtime</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="demo-card">
-                        <h3>ROI Summary</h3>
-                        <div class="roi-summary">
-                            <div class="roi-metrics">
-                                <div class="roi-item">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <div class="roi-details">
-                                        <span class="roi-value">$125,000</span>
-                                        <span class="roi-label">Annual Savings</span>
-                                    </div>
-                                </div>
-                                <div class="roi-item">
-                                    <i class="fas fa-percentage"></i>
-                                    <div class="roi-details">
-                                        <span class="roi-value">280%</span>
-                                        <span class="roi-label">ROI</span>
-                                    </div>
-                                </div>
-                                <div class="roi-item">
-                                    <i class="fas fa-clock"></i>
-                                    <div class="roi-details">
-                                        <span class="roi-value">8 months</span>
-                                        <span class="roi-label">Payback Period</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="roi-chart">
-                                <canvas id="roiChart" width="200" height="150"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 7. End-to-End Workflow -->
-            <section id="workflow" class="demo-section">
-                <h2><i class="fas fa-project-diagram"></i> End-to-End Workflow</h2>
-                
-                <div class="workflow-timeline">
-                    <div class="timeline-step active" data-step="1">
-                        <div class="step-icon">
-                            <i class="fas fa-barcode"></i>
-                        </div>
-                        <div class="step-content">
-                            <h4>Barcode Scan</h4>
-                            <p>Operator scans barcode to identify job</p>
-                        </div>
-                    </div>
-                    <div class="timeline-step" data-step="2">
-                        <div class="step-icon">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                        <div class="step-content">
-                            <h4>PF6000 Job Load</h4>
-                            <p>Tool loads tightening parameters</p>
-                        </div>
-                    </div>
-                    <div class="timeline-step" data-step="3">
-                        <div class="step-icon">
-                            <i class="fas fa-cog"></i>
-                        </div>
-                        <div class="step-content">
-                            <h4>Torque Execution</h4>
-                            <p>Tool performs tightening operation</p>
-                        </div>
-                    </div>
-                    <div class="timeline-step" data-step="4">
-                        <div class="step-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <div class="step-content">
-                            <h4>Data Analytics</h4>
-                            <p>Results analyzed in real-time</p>
-                        </div>
-                    </div>
-                    <div class="timeline-step" data-step="5">
-                        <div class="step-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="step-content">
-                            <h4>Report Generation</h4>
-                            <p>Quality report created</p>
-                        </div>
-                    </div>
-                    <div class="timeline-step" data-step="6">
-                        <div class="step-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="step-content">
-                            <h4>ROI Impact</h4>
-                            <p>Productivity gains measured</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="workflow-controls">
-                    <button class="workflow-btn" onclick="startWorkflow()">
-                        <i class="fas fa-play"></i>
-                        Start Workflow
-                    </button>
-                    <button class="workflow-btn" onclick="resetWorkflow()">
-                        <i class="fas fa-redo"></i>
-                        Reset
-                    </button>
-                </div>
-            </section>
-        </main>
+            </div>
+            
+            <button id="start-demo" class="start-button">Start Demo</button>
+        </div>
     </div>
+
+    <!-- Main Demo Screen -->
+    <div id="demo-screen" class="screen">
+        <div class="demo-header">
+            <h1>Automated Barcode & Tightening System</h1>
+            <div class="progress-indicator">
+                <span id="step-counter">Step 1 of 6</span>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-container">
+            <!-- Step 1: Scan Barcode -->
+            <div id="step-1" class="demo-step active">
+                <div class="step-header">
+                    <h2>Step 1: Scan Barcode</h2>
+                    <div class="step-status" id="step1-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="scanner-section">
+                        <div class="scanner-animation">
+                            <div class="scanner-beam"></div>
+                            <div class="barcode-display">
+                                <div class="barcode-lines"></div>
+                                <div class="barcode-text">Ready to scan...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="scan-controls">
+                            <button id="scan-button" class="action-button">📱 Scan Barcode</button>
+                            <button id="invalid-scan" class="action-button secondary">❌ Simulate Invalid Scan</button>
+                        </div>
+                        
+                        <div id="scan-result" class="result-display"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Place Component -->
+            <div id="step-2" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 2: Place Component</h2>
+                    <div class="step-status" id="step2-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="component-section">
+                        <div class="component-area">
+                            <div class="component-placeholder">
+                                <div class="component-icon">📦</div>
+                                <span>Place Component Here</span>
+                            </div>
+                        </div>
+                        
+                        <div class="sensor-status">
+                            <div class="sensor-item">
+                                <span class="sensor-label">Part Sensor:</span>
+                                <span id="part-sensor" class="sensor-value">❌ Not Detected</span>
+                            </div>
+                        </div>
+                        
+                        <button id="place-component" class="action-button">📦 Place Component</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Press Cycle Start -->
+            <div id="step-3" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 3: Press Cycle Start</h2>
+                    <div class="step-status" id="step3-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="cycle-section">
+                        <div class="cylinder-animation">
+                            <h3 class="cylinder-title">Part Clamp Cylinder</h3>
+                            <div class="cylinder">
+                                <div id="cylinder-piston" class="cylinder-piston"></div>
+                            </div>
+                            <div class="cylinder-status">
+                                <span id="cylinder-status">Retracted</span>
+                            </div>
+                        </div>
+                        
+                        <div class="reed-switch">
+                            <div class="reed-indicator" id="reed-indicator">🔴</div>
+                            <span>Forward Reed Switch</span>
+                        </div>
+                        
+                        <div class="cycle-prompt">
+                            <span class="blink-message">Press Cycle Start</span>
+                        </div>
+                        
+                        <button id="cycle-start" class="action-button large">Press Cycle Start</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Tightening Process -->
+            <div id="step-4" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 4: Tightening Process</h2>
+                    <div class="step-status" id="step4-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="tightening-section">
+                        <div class="tightening-layout">
+                            <div class="chart-side">
+                                <div class="chart-container">
+                                    <canvas id="torque-chart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="metrics-side">
+                                <div class="tightening-visual">
+                                    <div class="scanner-component">
+                                        <div class="scanner-icon">📱</div>
+                                        <div class="scanner-beam"></div>
+                                    </div>
+                                    <div class="component-visual">
+                                        <div class="component-icon">📦</div>
+                                        <span>Component</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="current-metrics">
+                                    <h3>Current Values</h3>
+                                    <div class="metric">
+                                        <span class="metric-label">Current Torque:</span>
+                                        <span id="current-torque" class="metric-value">0.0 Nm</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">Current Angle:</span>
+                                        <span id="current-angle" class="metric-value">0°</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="target-metrics">
+                                    <h3>Target Values</h3>
+                                    <div class="metric">
+                                        <span class="metric-label">Target Torque:</span>
+                                        <span class="metric-value">25.0 Nm</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">Target Angle:</span>
+                                        <span class="metric-value">90°</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="tightening-result" class="result-display"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Pass Sequence -->
+            <div id="step-5" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 5: Pass Sequence</h2>
+                    <div class="step-status" id="step5-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="pass-section">
+                        <div class="pass-banner">
+                            <div class="pass-icon">✅</div>
+                            <h3>PASS</h3>
+                            <p>Component meets all specifications</p>
+                        </div>
+                        
+                        <div class="cylinder-animation">
+                            <div class="cylinder">
+                                <div id="pass-cylinder-piston" class="cylinder-piston"></div>
+                            </div>
+                            <div class="cylinder-status">
+                                <span id="pass-cylinder-status">Retracting...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="action-prompt">
+                            <p>✅ Remove Component</p>
+                        </div>
+                        
+                        <button id="remove-component" class="action-button">📦 Remove Component</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Fail Sequence -->
+            <div id="step-6" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 6: Fail Sequence</h2>
+                    <div class="step-status" id="step6-status">⏳ Waiting...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="fail-section">
+                        <div class="fail-banner">
+                            <div class="fail-icon">❌</div>
+                            <h3>FAIL</h3>
+                            <p>Component does not meet specifications</p>
+                        </div>
+                        
+                        <div class="fail-sequence">
+                            <!-- Dynamic Status Bar -->
+                            <div class="status-bar">
+                                <div class="status-message" id="fail-status-message">
+                                    <span id="fail-status-text">⏳ Starting fail sequence...</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Rejection Bin Section (initially hidden) -->
+                            <div class="rejection-section" id="rejection-section" style="display: none;">
+                                <div class="rejection-bin">
+                                    <div class="bin-icon">🗑️</div>
+                                    <span>Rejection Bin</span>
+                                </div>
+                                
+                                <div class="sensor-status">
+                                    <div class="sensor-item">
+                                        <span class="sensor-label">Rejection Bin Sensor:</span>
+                                        <span id="rejection-sensor" class="sensor-value">❌ Not Triggered</span>
+                                    </div>
+                                </div>
+                                
+                                <button id="move-to-rejection" class="action-button">📦 Move to Rejection Bin</button>
+                            </div>
+                            
+                            <!-- Password Section -->
+                            <div id="password-section" class="password-section hidden">
+                                <div class="password-prompt">
+                                    <p>🔒 Enter Password to Reactivate Tool</p>
+                                    <p class="password-hint">Password: <strong>1234</strong></p>
+                                    <input type="password" id="password-input" placeholder="Enter password" maxlength="4">
+                                    <button id="submit-password" class="action-button">🔓 Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="password-section" class="password-section hidden">
+                            <div class="password-prompt">
+                                <p>🔒 Enter Password to Reactivate Tool</p>
+                                <p class="password-hint">Password: <strong>1234</strong></p>
+                                <input type="password" id="password-input" placeholder="Enter password" maxlength="4">
+                                <button id="submit-password" class="action-button">🔓 Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Report -->
+        <div id="summary-report" class="summary-report hidden">
+            <div class="summary-header">
+                <h3>Cycle Summary Report</h3>
+                <button id="close-summary" class="close-button">×</button>
+            </div>
+            <div class="summary-content">
+                <div class="summary-item">
+                    <span class="summary-label">Barcode:</span>
+                    <span id="summary-barcode" class="summary-value">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Final Torque:</span>
+                    <span id="summary-torque" class="summary-value">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Final Angle:</span>
+                    <span id="summary-angle" class="summary-value">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Result:</span>
+                    <span id="summary-result" class="summary-value">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Cycle Time:</span>
+                    <span id="summary-time" class="summary-value">-</span>
+                </div>
+            </div>
+            <button id="restart-cycle" class="action-button">🔄 Start New Cycle</button>
+        </div>
+
+        <!-- Navigation -->
+        <div class="demo-navigation">
+            <button id="prev-step" class="nav-button" disabled>← Previous</button>
+            <button id="next-step" class="nav-button" disabled>Next →</button>
+        </div>
+    </div>
+
+    <!-- Pass/Fail Selection Modal -->
+    <div id="pass-fail-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Simulation Selection</h3>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to simulate a Pass or Fail outcome?</p>
+                <div class="simulation-buttons">
+                    <button id="simulate-pass" class="action-button success">✅ Simulate Pass</button>
+                    <button id="simulate-fail" class="action-button danger">❌ Simulate Fail</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="scan-sound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT">
+    </audio>
+    <audio id="pass-sound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT">
+    </audio>
+    <audio id="fail-sound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT">
+    </audio>
 
     <script src="script.js"></script>
 </body>
