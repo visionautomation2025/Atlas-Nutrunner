@@ -2319,6 +2319,680 @@ body {
     letter-spacing: 1px;
 } 
 
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    /* General mobile adjustments */
+    body {
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    .demo-container {
+        padding: 10px;
+        margin: 0;
+        border-radius: 10px;
+    }
+    
+    /* Header adjustments */
+    .demo-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .demo-header h2 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+    }
+    
+    .progress-container {
+        margin: 10px 0;
+    }
+    
+    .step-counter {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    
+    /* Step content adjustments */
+    .step-content {
+        padding: 15px;
+    }
+    
+    .step-header h2 {
+        font-size: 1.3rem;
+        margin-bottom: 8px;
+    }
+    
+    .step-status {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    
+    /* Step 1 - Barcode scanning */
+    .scanner-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .scanner-animation {
+        width: 100%;
+        max-width: 300px;
+        height: 200px;
+    }
+    
+    .barcode-display {
+        min-height: 120px;
+        padding: 15px;
+    }
+    
+    .barcode-lines {
+        gap: 2px;
+        min-height: 80px;
+    }
+    
+    .barcode-text {
+        font-size: 1rem;
+        padding: 8px 12px;
+    }
+    
+    .scanner-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .scan-button, .invalid-scan-button {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+    
+    /* Step 1.5 - Verification screen */
+    .verification-container {
+        padding: 20px;
+    }
+    
+    .verification-header h3 {
+        font-size: 1.4rem;
+    }
+    
+    .comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .comparison-item {
+        padding: 15px;
+    }
+    
+    .comparison-label {
+        font-size: 0.9rem;
+    }
+    
+    .comparison-value {
+        font-size: 1rem;
+    }
+    
+    .proceed-button {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    
+    /* Step 2 - Component placement */
+    .component-placeholder {
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    .nut-display-step2 {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nut-item-step2 {
+        padding: 12px;
+    }
+    
+    .nut-icon-step2 {
+        font-size: 2rem;
+    }
+    
+    .nut-label-step2 {
+        font-size: 1rem;
+    }
+    
+    .component-text {
+        font-size: 1.2rem;
+    }
+    
+    .sensor-status {
+        margin: 15px 0;
+        padding: 15px;
+    }
+    
+    .sensor-label {
+        font-size: 1rem;
+    }
+    
+    .sensor-value {
+        font-size: 1rem;
+        padding: 8px 12px;
+    }
+    
+    /* Step 3 - Cycle start */
+    .cycle-section {
+        gap: 20px;
+    }
+    
+    .pneumatic-cylinder-animation {
+        width: 100%;
+        max-width: 350px;
+    }
+    
+    .cylinder-title {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+    
+    .pneumatic-cylinder {
+        width: 100%;
+        height: 120px;
+    }
+    
+    .cylinder-status {
+        margin-top: 10px;
+    }
+    
+    .cylinder-status span {
+        font-size: 1.2rem;
+        padding: 8px 12px;
+    }
+    
+    .reed-switch {
+        gap: 8px;
+    }
+    
+    .reed-indicator {
+        font-size: 1.5rem;
+    }
+    
+    .cycle-prompt {
+        margin: 15px 0;
+    }
+    
+    .blink-message {
+        font-size: 1.1rem;
+    }
+    
+    .push-button-container {
+        margin: 20px 0;
+    }
+    
+    .push-button {
+        width: 200px;
+        height: 60px;
+    }
+    
+    .button-text {
+        font-size: 1rem;
+    }
+    
+    /* Step 4 - Tightening process */
+    .tightening-section {
+        gap: 20px;
+    }
+    
+    .nut-selection-display {
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .selected-nut {
+        padding: 10px;
+    }
+    
+    .nut-icon-tightening {
+        font-size: 2rem;
+    }
+    
+    .nut-label-tightening {
+        font-size: 1rem;
+    }
+    
+    .selection-message {
+        padding: 8px 12px;
+    }
+    
+    .message-text {
+        font-size: 1rem;
+    }
+    
+    .tightening-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .chart-side {
+        width: 100%;
+    }
+    
+    .chart-container {
+        height: 250px;
+        padding: 15px;
+    }
+    
+    .metrics-side {
+        width: 100%;
+        gap: 15px;
+    }
+    
+    .current-metrics, .target-metrics {
+        padding: 15px;
+    }
+    
+    .current-metrics h3, .target-metrics h3 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    .metric {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+    }
+    
+    .metric-value {
+        font-size: 1rem;
+    }
+    
+    /* Step 5 - Pass sequence */
+    .pass-section {
+        gap: 20px;
+    }
+    
+    .pass-banner {
+        padding: 20px;
+    }
+    
+    .pass-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+    
+    .pass-banner h3 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .pass-banner p {
+        font-size: 1rem;
+    }
+    
+    .cylinder-animation {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .cylinder {
+        width: 100%;
+        height: 100px;
+    }
+    
+    .centered-action-section {
+        padding: 20px;
+        gap: 15px;
+    }
+    
+    .centered-action-section .action-prompt p {
+        font-size: 1.4rem;
+    }
+    
+    .centered-action-section .action-button {
+        font-size: 1.1rem;
+        padding: 12px 24px;
+    }
+    
+    /* Step 6 - Fail sequence */
+    .fail-section {
+        gap: 20px;
+    }
+    
+    .fail-round-display {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .fail-circle {
+        width: 250px;
+        height: 250px;
+        padding: 20px;
+    }
+    
+    .fail-icon-round {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+    
+    .fail-text h3 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .fail-text p {
+        font-size: 1rem;
+    }
+    
+    .fail-sequence {
+        gap: 20px;
+    }
+    
+    .status-bar {
+        padding: 15px;
+    }
+    
+    .status-message {
+        padding: 12px;
+    }
+    
+    .status-message span {
+        font-size: 1rem;
+    }
+    
+    .rejection-section {
+        gap: 15px;
+    }
+    
+    .rejection-bin {
+        padding: 15px;
+        gap: 8px;
+    }
+    
+    .bin-icon {
+        font-size: 2rem;
+    }
+    
+    .sensor-status {
+        padding: 15px;
+    }
+    
+    .sensor-item {
+        gap: 10px;
+    }
+    
+    .sensor-label {
+        font-size: 0.9rem;
+    }
+    
+    .sensor-value {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+    
+    /* Step 7 - Password screen */
+    .password-section {
+        padding: 20px;
+        gap: 20px;
+    }
+    
+    .password-prompt h3 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+    
+    .password-prompt p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    #password-input {
+        width: 100%;
+        max-width: 250px;
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+    
+    .password-submit {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    
+    /* Step 8 - Success screen */
+    .reactivation-success-screen {
+        padding: 20px;
+    }
+    
+    .success-circle {
+        width: 250px;
+        height: 250px;
+        padding: 20px;
+    }
+    
+    .success-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+    
+    .success-content h3 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+    
+    .success-content p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    .success-details {
+        gap: 10px;
+    }
+    
+    .detail-item {
+        padding: 10px;
+        gap: 8px;
+    }
+    
+    .detail-icon {
+        font-size: 1.2rem;
+    }
+    
+    .detail-text {
+        font-size: 0.9rem;
+    }
+    
+    .success-message {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .success-message p {
+        font-size: 1rem;
+    }
+    
+    /* Navigation buttons */
+    .demo-navigation {
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .nav-button {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    /* Summary report */
+    .summary-report {
+        padding: 20px;
+    }
+    
+    .summary-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .summary-content {
+        gap: 12px;
+    }
+    
+    .summary-item {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .summary-label {
+        font-size: 0.9rem;
+    }
+    
+    .summary-value {
+        font-size: 1rem;
+    }
+    
+    .action-button {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+    
+    /* Modal adjustments */
+    .modal-content {
+        margin: 20px;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-body p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    .simulation-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .simulation-buttons .action-button {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+        padding: 5px;
+    }
+    
+    .demo-container {
+        padding: 8px;
+    }
+    
+    .demo-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .demo-header h2 {
+        font-size: 1rem;
+    }
+    
+    .step-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .step-content {
+        padding: 10px;
+    }
+    
+    .scanner-animation {
+        height: 150px;
+    }
+    
+    .barcode-display {
+        min-height: 100px;
+        padding: 10px;
+    }
+    
+    .pneumatic-cylinder {
+        height: 100px;
+    }
+    
+    .chart-container {
+        height: 200px;
+        padding: 10px;
+    }
+    
+    .pass-banner, .fail-circle, .success-circle {
+        padding: 15px;
+    }
+    
+    .pass-icon, .fail-icon-round, .success-icon {
+        font-size: 2.5rem;
+    }
+    
+    .pass-banner h3, .fail-text h3, .success-content h3 {
+        font-size: 1.3rem;
+    }
+    
+    .centered-action-section .action-prompt p {
+        font-size: 1.2rem;
+    }
+    
+    .centered-action-section .action-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+    
+    #password-input {
+        max-width: 200px;
+        padding: 10px 14px;
+    }
+    
+    .nav-button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .demo-container {
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+    
+    .step-content {
+        padding: 10px;
+    }
+    
+    .tightening-layout {
+        flex-direction: row;
+        gap: 15px;
+    }
+    
+    .chart-side {
+        width: 60%;
+    }
+    
+    .metrics-side {
+        width: 40%;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+    
+    .pass-banner, .fail-circle, .success-circle {
+        padding: 15px;
+    }
+    
+    .pass-icon, .fail-icon-round, .success-icon {
+        font-size: 2rem;
+    }
+} 
+
  
 
 
