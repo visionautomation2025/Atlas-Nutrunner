@@ -11,41 +11,47 @@
 <body>
     <!-- Intro Screen -->
     <div id="intro-screen" class="screen active">
+        <!-- Date Time Display -->
+        <div class="datetime-display">
+            <div class="date" id="current-date"></div>
+            <div class="time" id="current-time"></div>
+        </div>
+        
+        <!-- Floating Particles -->
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        
         <div class="intro-container">
             <div class="logo-section">
-                <div class="logo-icon">🔧</div>
+                <div class="nut-display">
+                    <div class="nut-item">
+                        <div class="nut-icon">🔩</div>
+                        <span class="nut-label">M8</span>
+                    </div>
+                    <div class="nut-item">
+                        <div class="nut-icon">🔩</div>
+                        <span class="nut-label">M6</span>
+                    </div>
+                </div>
                 <h1>Automated Barcode & Tightening System</h1>
                 <h2>Powered by Atlas Copco Power Focus Controller</h2>
-            </div>
-            
-            <div class="flow-diagram">
-                <div class="flow-step">
-                    <div class="step-icon">📱</div>
-                    <span>Scan</span>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">
-                    <div class="step-icon">📦</div>
-                    <span>Place</span>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">
-                    <div class="step-icon">⚡</div>
-                    <span>Tighten</span>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">
-                    <div class="step-icon">✅</div>
-                    <span>Result</span>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">
-                    <div class="step-icon">🔄</div>
-                    <span>Next Cycle</span>
+                <div class="tech-badges">
+                    <span class="badge">IoT</span>
+                    <span class="badge">AI</span>
+                    <span class="badge">Industry 4.0</span>
                 </div>
             </div>
             
-            <button id="start-demo" class="start-button">Start Demo</button>
+            <div class="action-section">
+                <button id="start-demo" class="start-button">
+                    <span class="button-text">Start Demo</span>
+                    <span class="button-icon">▶️</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -54,7 +60,7 @@
         <div class="demo-header">
             <h1>Automated Barcode & Tightening System</h1>
             <div class="progress-indicator">
-                <span id="step-counter">Step 1 of 6</span>
+                <span id="step-counter">Step 1 of 8</span>
                 <div class="progress-bar">
                     <div id="progress-fill" class="progress-fill"></div>
                 </div>
@@ -72,6 +78,16 @@
                 <div class="step-content">
                     <div class="scanner-section">
                         <div class="scanner-animation">
+                            <!-- Tower Lamp -->
+                            <div class="tower-lamp">
+                                <div class="lamp-base"></div>
+                                <div class="lamp-tower">
+                                    <div class="lamp-light red-light" id="red-light"></div>
+                                    <div class="lamp-light orange-light" id="orange-light"></div>
+                                    <div class="lamp-light green-light" id="green-light"></div>
+                                </div>
+                            </div>
+                            
                             <div class="scanner-beam"></div>
                             <div class="barcode-display">
                                 <div class="barcode-lines"></div>
@@ -89,6 +105,55 @@
                 </div>
             </div>
 
+            <!-- Step 1.5: Barcode Verification -->
+            <div id="step-1-5" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 1.5: Barcode Verification</h2>
+                    <div class="step-status" id="step1-5-status">⏳ Verifying...</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="verification-section">
+                        <div class="verification-container">
+                            <div class="verification-header">
+                                <div class="verification-icon">🔍</div>
+                                <h3>Barcode Data Verification</h3>
+                                <p>Comparing scanned data with Power Focus Controller</p>
+                            </div>
+                            
+                            <div class="comparison-grid">
+                                <div class="comparison-item">
+                                    <div class="comparison-label">Scanned Barcode:</div>
+                                    <div class="comparison-value scanned-value" id="scanned-barcode-display">ABC123</div>
+                                </div>
+                                
+                                <div class="comparison-arrow">⇄</div>
+                                
+                                <div class="comparison-item">
+                                    <div class="comparison-label">Controller Part:</div>
+                                    <div class="comparison-value controller-value" id="controller-part-display">M8-NUT-001</div>
+                                </div>
+                            </div>
+                            
+                            <div class="verification-result">
+                                <div class="result-icon">✅</div>
+                                <div class="result-text">
+                                    <h4>Verification Successful</h4>
+                                    <p>Part data matches controller configuration</p>
+                                </div>
+                            </div>
+                            
+                            <div class="verification-actions">
+                                <button id="proceed-to-step2" class="proceed-button">
+                                    <span class="button-text">Proceed to Step 2</span>
+                                    <span class="button-icon">→</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Step 2: Place Component -->
             <div id="step-2" class="demo-step">
                 <div class="step-header">
@@ -100,8 +165,17 @@
                     <div class="component-section">
                         <div class="component-area">
                             <div class="component-placeholder">
-                                <div class="component-icon">📦</div>
-                                <span>Place Component Here</span>
+                                <div class="nut-display-step2">
+                                    <div class="nut-item-step2">
+                                        <div class="nut-icon-step2">🔩</div>
+                                        <span class="nut-label-step2">M8</span>
+                                    </div>
+                                    <div class="nut-item-step2">
+                                        <div class="nut-icon-step2">🔩</div>
+                                        <span class="nut-label-step2">M6</span>
+                                    </div>
+                                </div>
+                                <span class="component-text">Place Component Here</span>
                             </div>
                         </div>
                         
@@ -126,10 +200,28 @@
                 
                 <div class="step-content">
                     <div class="cycle-section">
-                        <div class="cylinder-animation">
-                            <h3 class="cylinder-title">Part Clamp Cylinder</h3>
-                            <div class="cylinder">
-                                <div id="cylinder-piston" class="cylinder-piston"></div>
+                        <div class="pneumatic-cylinder-animation">
+                            <h3 class="cylinder-title">Pneumatic Pencil Cylinder</h3>
+                            <div class="pneumatic-cylinder">
+                                <div class="cylinder-body">
+                                    <div class="cylinder-tube">
+                                        <div id="pneumatic-piston" class="pneumatic-piston"></div>
+                                        <div class="piston-rod"></div>
+                                    </div>
+                                    <div class="cylinder-flanges">
+                                        <div class="flange flange-left"></div>
+                                        <div class="flange flange-right"></div>
+                                    </div>
+                                    <div class="mounting-grooves">
+                                        <div class="groove groove-1"></div>
+                                        <div class="groove groove-2"></div>
+                                        <div class="groove groove-3"></div>
+                                    </div>
+                                    <div class="cylinder-mounts">
+                                        <div class="mount mount-left"></div>
+                                        <div class="mount mount-right"></div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="cylinder-status">
                                 <span id="cylinder-status">Retracted</span>
@@ -145,7 +237,15 @@
                             <span class="blink-message">Press Cycle Start</span>
                         </div>
                         
-                        <button id="cycle-start" class="action-button large">Press Cycle Start</button>
+                        <div class="push-button-container">
+                            <button id="cycle-start" class="push-button">
+                                <div class="button-top"></div>
+                                <div class="button-body">
+                                    <span class="button-text">CYCLE START</span>
+                                    <div class="button-indicator"></div>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -159,6 +259,17 @@
                 
                 <div class="step-content">
                     <div class="tightening-section">
+                        <!-- M8 Selection Display -->
+                        <div class="nut-selection-display">
+                            <div class="selected-nut">
+                                <div class="nut-icon-tightening">🔩</div>
+                                <span class="nut-label-tightening">M8</span>
+                            </div>
+                            <div class="selection-message">
+                                <span class="message-text">M8 Selected</span>
+                            </div>
+                        </div>
+                        
                         <div class="tightening-layout">
                             <div class="chart-side">
                                 <div class="chart-container">
@@ -222,11 +333,13 @@
                             </div>
                         </div>
                         
-                        <div class="action-prompt">
-                            <p>✅ Remove Component</p>
+                        <div class="centered-action-section">
+                            <div class="action-prompt">
+                                <p>✅ Remove Component</p>
+                            </div>
+                            
+                            <button id="remove-component" class="action-button">📦 Remove Component</button>
                         </div>
-                        
-                        <button id="remove-component" class="action-button">📦 Remove Component</button>
                     </div>
                 </div>
             </div>
@@ -240,10 +353,14 @@
                 
                 <div class="step-content">
                     <div class="fail-section">
-                        <div class="fail-banner">
-                            <div class="fail-icon">❌</div>
-                            <h3>FAIL</h3>
-                            <p>Component does not meet specifications</p>
+                        <div class="fail-round-display">
+                            <div class="fail-circle">
+                                <div class="fail-icon-round">❌</div>
+                                <div class="fail-text">
+                                    <h3>FAIL</h3>
+                                    <p>Component does not meet specifications</p>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="fail-sequence">
@@ -307,6 +424,43 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Step 8: Tool Reactivation Success -->
+            <div id="step-8" class="demo-step">
+                <div class="step-header">
+                    <h2>Step 8: Tool Reactivation Success</h2>
+                    <div class="step-status" id="step8-status">✅ Success</div>
+                </div>
+                
+                <div class="step-content">
+                    <div class="reactivation-success-screen">
+                        <div class="success-circle">
+                            <div class="success-icon">🔓</div>
+                            <div class="success-content">
+                                <h3>Tool Reactivated Successfully!</h3>
+                                <p>The tightening tool has been successfully reactivated and is ready for operation.</p>
+                                <div class="success-details">
+                                    <div class="detail-item">
+                                        <span class="detail-icon">✅</span>
+                                        <span class="detail-text">Password Verified</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-icon">🔧</span>
+                                        <span class="detail-text">Tool Status: Active</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-icon">⚡</span>
+                                        <span class="detail-text">System Ready</span>
+                                    </div>
+                                </div>
+                                <div class="success-message">
+                                    <p>🔄 Ready for new cycle - Please scan barcode</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Summary Report -->
@@ -339,6 +493,8 @@
             </div>
             <button id="restart-cycle" class="action-button">🔄 Start New Cycle</button>
         </div>
+
+
 
         <!-- Navigation -->
         <div class="demo-navigation">

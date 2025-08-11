@@ -1,6 +1,6 @@
 // Global Variables
 let currentStep = 1;
-let totalSteps = 7;
+let totalSteps = 9;
 let cycleData = {
     barcode: '',
     finalTorque: 0,
@@ -14,6 +14,8 @@ let tighteningInterval;
 let currentTorque = 0;
 let currentAngle = 0;
 let isPassSequence = true; // Toggle between pass/fail for demo
+let dateTimeInterval; // For updating date and time
+let cycleStarted = false; // Flag to track if cycle start button was clicked
 
 // Barcode text management
 function setBarcodeText(text) {
@@ -103,11 +105,27 @@ function generateBarcode(text, container) {
     // Create visual bars
     fullPattern.forEach((bar, index) => {
         const barElement = document.createElement('div');
-        barElement.style.width = '2px';
-        barElement.style.height = '40px';
-        barElement.style.backgroundColor = bar === 1 ? '#000' : '#fff';
-        barElement.style.marginRight = '1px';
-        barElement.style.display = 'inline-block';
+        
+        if (bar === 1) {
+            // Black bar
+            barElement.className = 'bar';
+            barElement.style.width = '4px';
+            barElement.style.height = '50px';
+            barElement.style.backgroundColor = '#000';
+            barElement.style.marginRight = '2px';
+            barElement.style.display = 'inline-block';
+            barElement.style.borderRadius = '1px';
+            barElement.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.3)';
+        } else {
+            // White space
+            barElement.className = 'space';
+            barElement.style.width = '3px';
+            barElement.style.height = '50px';
+            barElement.style.backgroundColor = 'transparent';
+            barElement.style.marginRight = '2px';
+            barElement.style.display = 'inline-block';
+        }
+        
         container.appendChild(barElement);
     });
 }
@@ -128,8 +146,21 @@ const failSound = document.getElementById('fail-sound');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing application...');
     initializeEventListeners();
     initializeChart();
+    startDateTimeUpdate(); // Start date and time updates
+    
+    // Initialize tower lamp to waiting state
+    setTowerLampStatus('waiting');
+    
+    // Test verification screen
+    console.log('Testing verification screen elements...');
+    const testElement = document.getElementById('step-1-5');
+    console.log('Step 1.5 element found:', !!testElement);
+    if (testElement) {
+        console.log('Step 1.5 element classes:', testElement.className);
+    }
 });
 
 // Event Listeners
@@ -144,6 +175,9 @@ function initializeEventListeners() {
     // Step 1: Scan Barcode
     document.getElementById('scan-button').addEventListener('click', scanBarcode);
     document.getElementById('invalid-scan').addEventListener('click', invalidScan);
+    
+    // Step 1.5: Verification Screen
+    document.getElementById('proceed-to-step2').addEventListener('click', proceedToStep2);
     
     // Step 2: Place Component
     document.getElementById('place-component').addEventListener('click', placeComponent);
@@ -196,6 +230,12 @@ function previousStep() {
 }
 
 function nextStep() {
+    // Check if trying to go to Step 4 without starting cycle
+    if (currentStep === 3 && !cycleStarted) {
+        alert('⚠️ Please click "Press Cycle Start" button first!');
+        return;
+    }
+    
     if (currentStep < totalSteps) {
         currentStep++;
         showStep(currentStep);
@@ -205,21 +245,46 @@ function nextStep() {
 }
 
 function showStep(stepNumber) {
+    console.log('Showing step:', stepNumber);
+    
     // Hide all steps
     document.querySelectorAll('.demo-step').forEach(step => {
         step.classList.remove('active');
     });
     
     // Show current step
-    document.getElementById(`step-${stepNumber}`).classList.add('active');
+    let stepId;
+    if (stepNumber === 1.5) {
+        stepId = 'step-1-5';
+    } else {
+        stepId = `step-${stepNumber}`;
+    }
+    
+    console.log('Looking for step ID:', stepId);
+    const stepElement = document.getElementById(stepId);
+    console.log('Step element found:', !!stepElement);
+    
+    if (stepElement) {
+        stepElement.classList.add('active');
+        console.log('Step activated:', stepId);
+    } else {
+        console.error('Step element not found:', stepId);
+    }
     
     // Update step counter
-    stepCounter.textContent = `Step ${stepNumber} of ${totalSteps}`;
+    if (stepNumber === 1.5) {
+        stepCounter.textContent = `Step 1.5 of ${totalSteps}`;
+    } else {
+        stepCounter.textContent = `Step ${stepNumber} of ${totalSteps}`;
+    }
     
     // Handle step-specific logic
     switch(stepNumber) {
         case 1:
             resetStep1();
+            break;
+        case 1.5:
+            // Verification screen is already shown
             break;
         case 2:
             resetStep2();
@@ -243,27 +308,39 @@ function showStep(stepNumber) {
         case 7:
             // Password screen is already shown in HTML
             break;
+        case 8:
+            // Tool reactivation success screen is already shown in HTML
+            break;
     }
 }
 
 function updateProgress() {
-    const progress = (currentStep / totalSteps) * 100;
+    let progress;
+    if (currentStep === 1.5) {
+        progress = (1.5 / totalSteps) * 100;
+    } else {
+        progress = (currentStep / totalSteps) * 100;
+    }
     progressFill.style.width = `${progress}%`;
 }
 
 function updateNavigationButtons() {
     prevStepBtn.disabled = currentStep === 1;
-    nextStepBtn.disabled = currentStep === totalSteps;
+    nextStepBtn.disabled = currentStep === totalSteps || currentStep === 1.5;
 }
 
 // Step 1: Scan Barcode
 function scanBarcode() {
+    console.log('Scan barcode function called');
+    
     const scanResult = document.getElementById('scan-result');
     const stepStatus = document.getElementById('step1-status');
     
     // Generate random barcode
     const barcode = 'ABC' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     cycleData.barcode = barcode;
+    
+    console.log('Generated barcode:', barcode);
     
     // Play scan sound
     playSound(scanSound);
@@ -278,9 +355,14 @@ function scanBarcode() {
     scanResult.innerHTML = '✅ Scan OK — Part Selected in Nutrunner';
     scanResult.className = 'result-display success';
     
-    // Enable next step
+    // Set tower lamp to green (success)
+    setTowerLampStatus('success');
+    
+    console.log('Will show verification screen in 1.5 seconds');
+    
+    // Show verification screen after delay
     setTimeout(() => {
-        nextStep();
+        showVerificationScreen(barcode);
     }, 1500);
 }
 
@@ -299,6 +381,9 @@ function invalidScan() {
     // Show error result
     scanResult.innerHTML = '❌ Invalid Barcode — Try Again';
     scanResult.className = 'result-display error';
+    
+    // Set tower lamp to red (error)
+    setTowerLampStatus('error');
     
     // Reset after 2 seconds
     setTimeout(() => {
@@ -321,6 +406,82 @@ function resetStep1() {
     stepStatus.textContent = '⏳ Waiting...';
     stepStatus.style.background = '#fff3cd';
     stepStatus.style.color = '#856404';
+    
+    // Set tower lamp to orange (waiting)
+    setTowerLampStatus('waiting');
+}
+
+// Step 1.5: Verification Screen
+function showVerificationScreen(barcode) {
+    console.log('Showing verification screen with barcode:', barcode);
+    
+    // Update step counter to show Step 1.5
+    currentStep = 1.5;
+    showStep(1.5);
+    updateProgress();
+    updateNavigationButtons();
+    
+    // Update verification display
+    const scannedBarcodeDisplay = document.getElementById('scanned-barcode-display');
+    const controllerPartDisplay = document.getElementById('controller-part-display');
+    const stepStatus = document.getElementById('step1-5-status');
+    
+    console.log('Elements found:', {
+        scannedBarcodeDisplay: !!scannedBarcodeDisplay,
+        controllerPartDisplay: !!controllerPartDisplay,
+        stepStatus: !!stepStatus
+    });
+    
+    // Set scanned data to actual barcode
+    if (scannedBarcodeDisplay) {
+        scannedBarcodeDisplay.textContent = barcode;
+    }
+    
+    // Set controller part to M8-NUT-{barcode}
+    if (controllerPartDisplay) {
+        controllerPartDisplay.textContent = 'M8-NUT-' + barcode;
+    }
+    
+    if (stepStatus) {
+        stepStatus.textContent = '✅ Verification Complete';
+        stepStatus.style.background = '#d4edda';
+        stepStatus.style.color = '#155724';
+    }
+}
+
+function proceedToStep2() {
+    // Move to Step 2
+    currentStep = 2;
+    showStep(2);
+    updateProgress();
+    updateNavigationButtons();
+}
+
+// Tower Lamp Control Function
+function setTowerLampStatus(status) {
+    const redLight = document.getElementById('red-light');
+    const orangeLight = document.getElementById('orange-light');
+    const greenLight = document.getElementById('green-light');
+    
+    // Remove active class from all lights
+    redLight.classList.remove('active');
+    orangeLight.classList.remove('active');
+    greenLight.classList.remove('active');
+    
+    // Activate the appropriate light based on status
+    switch(status) {
+        case 'waiting':
+            orangeLight.classList.add('active');
+            break;
+        case 'success':
+            greenLight.classList.add('active');
+            break;
+        case 'error':
+            redLight.classList.add('active');
+            break;
+        default:
+            orangeLight.classList.add('active');
+    }
 }
 
 // Step 2: Place Component
@@ -364,11 +525,14 @@ function resetStep2() {
 
 // Step 3: Press Cycle Start
 function startCycle() {
-    const cylinderPiston = document.getElementById('cylinder-piston');
+    const pneumaticPiston = document.getElementById('pneumatic-piston');
     const cylinderStatus = document.getElementById('cylinder-status');
     const reedIndicator = document.getElementById('reed-indicator');
     const stepStatus = document.getElementById('step3-status');
     const blinkMessage = document.querySelector('.blink-message');
+    
+    // Set cycle started flag
+    cycleStarted = true;
     
     // Hide blinking message
     if (blinkMessage) {
@@ -376,14 +540,16 @@ function startCycle() {
     }
     
     // Animate cylinder forward
-    cylinderPiston.classList.add('extended');
-    cylinderStatus.textContent = 'Extended';
+    setTimeout(() => {
+        pneumaticPiston.classList.add('extended');
+        cylinderStatus.textContent = 'Extended';
+    }, 300);
     
     // Update reed switch
     setTimeout(() => {
         reedIndicator.textContent = '🟢';
         reedIndicator.classList.add('active');
-    }, 500);
+    }, 800);
     
     // Update step status
     stepStatus.textContent = '✅ Complete';
@@ -397,13 +563,16 @@ function startCycle() {
 }
 
 function resetStep3() {
-    const cylinderPiston = document.getElementById('cylinder-piston');
+    const pneumaticPiston = document.getElementById('pneumatic-piston');
     const cylinderStatus = document.getElementById('cylinder-status');
     const reedIndicator = document.getElementById('reed-indicator');
     const stepStatus = document.getElementById('step3-status');
     const blinkMessage = document.querySelector('.blink-message');
     
-    cylinderPiston.classList.remove('extended');
+    // Reset cycle started flag
+    cycleStarted = false;
+    
+    pneumaticPiston.classList.remove('extended');
     cylinderStatus.textContent = 'Retracted';
     reedIndicator.textContent = '🔴';
     reedIndicator.classList.remove('active');
@@ -576,17 +745,29 @@ function initializeChart() {
                 label: 'Torque (Nm)',
                 data: [],
                 borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                borderWidth: 3,
                 tension: 0.4,
-                fill: true
+                fill: true,
+                pointBackgroundColor: '#667eea',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }, {
                 label: 'Angle (degrees)',
                 data: [],
                 borderColor: '#764ba2',
-                backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                backgroundColor: 'rgba(118, 75, 162, 0.2)',
+                borderWidth: 3,
                 tension: 0.4,
                 fill: true,
-                yAxisID: 'y1'
+                yAxisID: 'y1',
+                pointBackgroundColor: '#764ba2',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
@@ -601,7 +782,22 @@ function initializeChart() {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Time (s)'
+                        text: 'Time (s)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#2c3e50'
+                    },
+                    grid: {
+                        color: 'rgba(135, 206, 235, 0.2)',
+                        lineWidth: 1
+                    },
+                    ticks: {
+                        color: '#495057',
+                        font: {
+                            size: 12
+                        }
                     }
                 },
                 y: {
@@ -610,10 +806,25 @@ function initializeChart() {
                     position: 'left',
                     title: {
                         display: true,
-                        text: 'Torque (Nm)'
+                        text: 'Torque (Nm)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#667eea'
                     },
                     min: 0,
-                    max: 30
+                    max: 30,
+                    grid: {
+                        color: 'rgba(135, 206, 235, 0.2)',
+                        lineWidth: 1
+                    },
+                    ticks: {
+                        color: '#495057',
+                        font: {
+                            size: 12
+                        }
+                    }
                 },
                 y1: {
                     type: 'linear',
@@ -621,19 +832,57 @@ function initializeChart() {
                     position: 'right',
                     title: {
                         display: true,
-                        text: 'Angle (degrees)'
+                        text: 'Angle (degrees)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#764ba2'
                     },
                     min: 0,
                     max: 120,
                     grid: {
                         drawOnChartArea: false,
+                        color: 'rgba(135, 206, 235, 0.2)',
+                        lineWidth: 1
                     },
+                    ticks: {
+                        color: '#495057',
+                        font: {
+                            size: 12
+                        }
+                    }
                 }
             },
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top'
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#2c3e50'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    titleColor: '#2c3e50',
+                    bodyColor: '#495057',
+                    borderColor: '#667eea',
+                    borderWidth: 2,
+                    cornerRadius: 8,
+                    displayColors: true,
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    }
                 }
             }
         }
@@ -713,19 +962,19 @@ function startFailSequence() {
     statusText.textContent = '🔄 Part Clamp Reversing...';
     statusMessage.className = 'status-message updating';
     
-    // After 5 seconds: Part Clamp Reverse Reed Switch OK
+    // After 2 seconds: Part Clamp Reverse Reed Switch OK (reduced from 5 seconds)
     setTimeout(() => {
         statusText.textContent = '✅ Part Clamp Reverse Reed Switch OK';
         statusMessage.className = 'status-message success';
-    }, 5000);
+    }, 2000);
     
-    // After 3 more seconds (8 total): Move Component Sensor to Rejection Bin
+    // After 2 more seconds (4 total): Move Component Sensor to Rejection Bin (reduced from 8 seconds)
     setTimeout(() => {
         statusText.textContent = '📦 Move Component Sensor to Rejection Bin';
         statusMessage.className = 'status-message updating';
-    }, 8000);
+    }, 4000);
     
-    // After 3 more seconds (11 total): Rejection Bin Sensor Sensed
+    // After 2 more seconds (6 total): Rejection Bin Sensor Sensed (reduced from 11 seconds)
     setTimeout(() => {
         statusText.textContent = '✅ Rejection Bin Sensor Sensed';
         statusMessage.className = 'status-message success';
@@ -733,8 +982,8 @@ function startFailSequence() {
         // Hide rejection bin image and show password section
         setTimeout(() => {
             hideRejectionBinAndShowPassword();
-        }, 2000);
-    }, 11000);
+        }, 1500); // Reduced from 2000ms
+    }, 6000);
 }
 
 function hideRejectionBinAndShowPassword() {
@@ -800,10 +1049,10 @@ function submitPassword() {
         // Clear password input
         passwordInput.value = '';
         
-        // Show success message and then reset to barcode scan
+        // Show success message and then show reactivation success screen
         setTimeout(() => {
-            showRemoveComponentMessage();
-        }, 3000);
+            showReactivationSuccessScreen();
+        }, 2000);
     } else {
         // Show error
         passwordInput.style.borderColor = '#dc3545';
@@ -821,6 +1070,23 @@ function submitPassword() {
             statusMessage.className = 'status-message';
         }, 2000);
     }
+}
+
+function showReactivationSuccessScreen() {
+    // Move to Step 8 (Tool Reactivation Success)
+    currentStep = 8;
+    showStep(8);
+    updateProgress();
+    updateNavigationButtons();
+    
+    // Auto advance to step 1 (barcode scan) after delay
+    setTimeout(() => {
+        currentStep = 1;
+        showStep(1);
+        updateProgress();
+        updateNavigationButtons();
+        setBarcodeText('Ready to scan...');
+    }, 4000);
 }
 
 function showRemoveComponentMessage() {
@@ -903,6 +1169,9 @@ function restartCycle() {
         startTime: Date.now()
     };
     
+    // Reset cycle started flag
+    cycleStarted = false;
+    
     // Reset to step 1
     currentStep = 1;
     showStep(1);
@@ -980,4 +1249,51 @@ function handleSwipe() {
             previousStep();
         }
     }
+}
+
+// Date and Time Functions
+function updateDateTime() {
+    const now = new Date();
+    
+    // Update date
+    const dateElement = document.getElementById('current-date');
+    if (dateElement) {
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
+        dateElement.textContent = now.toLocaleDateString('en-US', options);
+    }
+    
+    // Update time
+    const timeElement = document.getElementById('current-time');
+    if (timeElement) {
+        const timeOptions = { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit',
+            hour12: true 
+        };
+        timeElement.textContent = now.toLocaleTimeString('en-US', timeOptions);
+    }
+}
+
+function startDateTimeUpdate() {
+    // Update immediately
+    updateDateTime();
+    
+    // Update every second
+    dateTimeInterval = setInterval(updateDateTime, 1000);
+}
+
+function stopDateTimeUpdate() {
+    if (dateTimeInterval) {
+        clearInterval(dateTimeInterval);
+    }
 } 
+
+ 
+
+ 
