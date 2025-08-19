@@ -527,6 +527,141 @@
     <audio id="fail-sound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT">
     </audio>
 
+    <!-- Animation Overlay -->
+    <div class="animation-overlay" id="animationOverlay">
+        <div class="animation-container">
+            <button class="close-btn" onclick="closeAnimation()">×</button>
+            <h2 style="text-align: center; color: #0050b3; margin-bottom: 30px;">🎬 Daily Operation Sequence Animation</h2>
+            
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">🔧</div>
+                <div class="step-details">
+                    <div class="step-title">Step 1: Load Fixture & Connect</div>
+                    <div class="step-desc">Load the fixture and connect pneumatic and electrical connections</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">🔍</div>
+                <div class="step-details">
+                    <div class="step-title">Step 2: Auto Model Selection</div>
+                    <div class="step-desc">Automatic model selection via sensor detection</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">📦</div>
+                <div class="step-details">
+                    <div class="step-title">Step 3: Pick Components</div>
+                    <div class="step-desc">Pick regulator sub-assembly and motor (LH/RH variant)</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">🎯</div>
+                <div class="step-details">
+                    <div class="step-title">Step 4: Place in Fixture</div>
+                    <div class="step-desc">Place component in the fixture securely</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">🔘</div>
+                <div class="step-details">
+                    <div class="step-title">Step 5: Activate Clamp</div>
+                    <div class="step-desc">Press push button to activate clamp mechanism</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">🔩</div>
+                <div class="step-details">
+                    <div class="step-title">Step 6: Tighten Screws</div>
+                    <div class="step-desc">Pick 3 screws and tighten with torque control</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">✅</div>
+                <div class="step-details">
+                    <div class="step-title">Step 7: Remove Assembly</div>
+                    <div class="step-desc">Remove completed assembly from fixture</div>
+                </div>
+            </div>
+            
+            <div class="step-animation">
+                <div class="step-icon">⏱️</div>
+                <div class="step-details">
+                    <div class="step-title">Cycle Complete</div>
+                    <div class="step-desc">Total cycle time: 20 seconds maximum</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactive functionality
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+        
+        // Animation functions
+        function showAnimation() {
+            const overlay = document.getElementById('animationOverlay');
+            overlay.style.display = 'flex';
+            
+            // Reset animations
+            const steps = document.querySelectorAll('.step-animation');
+            steps.forEach(step => {
+                step.style.opacity = '0';
+                step.style.transform = 'translateX(-50px)';
+            });
+            
+            // Trigger animations after a short delay
+            setTimeout(() => {
+                steps.forEach((step, index) => {
+                    setTimeout(() => {
+                        step.style.animation = `slideIn 0.6s ease-out forwards`;
+                    }, index * 200);
+                });
+            }, 100);
+        }
+        
+        function closeAnimation() {
+            const overlay = document.getElementById('animationOverlay');
+            overlay.style.display = 'none';
+            
+            // Reset progress bar
+            const progressFill = document.querySelector('.progress-fill');
+            progressFill.style.animation = 'none';
+            setTimeout(() => {
+                progressFill.style.animation = 'fillProgress 10s ease-out forwards';
+            }, 10);
+        }
+        
+        // Close animation when clicking outside the container
+        document.getElementById('animationOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAnimation();
+            }
+        });
+        
+        // Close animation with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAnimation();
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html> 
